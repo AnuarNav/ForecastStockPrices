@@ -63,7 +63,7 @@ def get_portfolios(given_index, start_date, end_date, window_number):
     # Markowitz min volatility portfolio & Sharpe, we need to run a loop.
     # In each iteration, the loop considers different weights for assets and
     # calculates the return and volatility of that particular portfolio combination.
-    # We run this loop a 1000 times.
+    # We run this loop a 10000 times.
     p_ret = []  # Define an empty array for portfolio returns
     p_vol = []  # Define an empty array for portfolio volatility
     p_weights = []  # Define an empty array for asset weights
@@ -88,8 +88,7 @@ def get_portfolios(given_index, start_date, end_date, window_number):
     for counter, symbol in enumerate(index_prices_df.columns.tolist()):
         data[symbol + ' weight'] = [w[counter] for w in p_weights]
 
-    portfolios = pd.DataFrame(data)
-    portfolios.head()  # Dataframe of the 10000 portfolios created
+    portfolios = pd.DataFrame(data)  # Dataframe of the 10000 portfolios created
 
     # The point (portfolios) in the interior are sub-optimal for a given risk level. For every interior point, there is
     # another that offers higher returns for the same risk.
@@ -99,7 +98,7 @@ def get_portfolios(given_index, start_date, end_date, window_number):
     min_vol_port = portfolios.iloc[portfolios['Volatility'].idxmin()]
 
     # Sharpe Ratio -> An optimal risky portfolio can be considered as one that has highest Sharpe ratio.
-    # Finding the optimal portfolio with the given risk factor based on 20 year bonds
+    # Finding the optimal portfolio with the given risk factor based on 20 year bonds interests offered
     if given_index == "DAX":
         risk_factor = GERM_20y_bonds_avg_3_years[window_number]
     else:
@@ -146,10 +145,10 @@ dates = ["2005-01-01", "2006-01-01", "2007-01-01", "2008-01-01", "2009-01-01", "
          "2012-01-01", "2013-01-01", "2014-01-01", "2015-01-01", "2016-01-01", "2017-01-01", "2018-01-01",
          "2019-01-01", "2020-01-01", "2021-01-01"]
 
-window_size = 3
+years_window_size = 3
 for index in indexes:
-    for i in range(window_size, len(dates)):
-        start_d = dates[i - window_size]
+    for i in range(years_window_size, len(dates)):
+        start_d = dates[i - years_window_size]
         end_d = dates[i]
-        get_portfolios(index, start_d, end_d, i - window_size)
+        get_portfolios(index, "2009-01-01", "2019-01-01", i - years_window_size)
         raise ValueError("")
