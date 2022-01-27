@@ -7,4 +7,4 @@ table=pd.read_html('https://en.wikipedia.org/wiki/DAX')
 
 df = table[3]
 
-df.to_csv("/Users/anuarnavarro/Desktop/TFG/Code/Data/DAX30/DAX30-Symbols.csv", columns=['Ticker symbol'])
+df.to_csv("/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DAX30/DAX30-Symbols.csv", columns=['Ticker symbol'])

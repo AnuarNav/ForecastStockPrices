@@ -7,4 +7,4 @@ table = pd.read_html('https://en.wikipedia.org/wiki/Nasdaq-100')
 
 df = table[3]
 print(df)
-df.to_csv("/Users/anuarnavarro/Desktop/TFG/Code/Data/NASDAQ100/NASDAQ-Symbols.csv", columns=['Ticker'])
+df.to_csv("/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/NASDAQ100/NASDAQ-Symbols.csv", columns=['Ticker'])

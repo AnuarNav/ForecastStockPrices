@@ -7,4 +7,4 @@ table=pd.read_html('https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average')
 
 df = table[1]
 
-df.to_csv("/Users/anuarnavarro/Desktop/TFG/Code/Data/DJI/DJI-Symbols.csv", columns=['Symbol'])
+df.to_csv("/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DJI/DJI-Symbols.csv", columns=['Symbol'])
