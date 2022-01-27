@@ -45,9 +45,9 @@ def get_portfolios(given_index, start_date, end_date, window_number):
     # Calculate Covariance Matrix
     cov_matrix = index_prices_df.pct_change().apply(lambda x: np.log(1 + x)).cov()
 
-    # Yearly returns for individual companies
-    # (last price - first price) / first price - Calculate annualised mean (daily) historical return from input (daily)
-    # asset prices
+    # Yearly returns for individual companies (expected return)
+    # Set data yearly by getting the last() value of each year, calculate the % change con respecto al año anterior and
+    # calculate the mean of them
     ind_er = index_prices_df.resample('Y').last().pct_change().mean()
 
     # Next, to plot the graph of efficient frontier and calculate the variance of EACH PORTFOLIO, to the calculate the
@@ -60,7 +60,7 @@ def get_portfolios(given_index, start_date, end_date, window_number):
     p_weights = []  # Define an empty array for asset weights
 
     num_assets = len(index_prices_df.columns)
-    num_portfolios = 50000
+    num_portfolios = 10000
     for portfolio in range(num_portfolios):
         weights = np.random.random(num_assets)
         weights = weights / np.sum(weights)
@@ -80,7 +80,6 @@ def get_portfolios(given_index, start_date, end_date, window_number):
         data[symbol + ' weight'] = [w[counter] for w in p_weights]
 
     portfolios = pd.DataFrame(data)  # Dataframe of the 10000 portfolios created
-    print(portfolios)
 
     # The point (portfolios) in the interior are sub-optimal for a given risk level. For every interior point, there is
     # another that offers higher returns for the same risk.
@@ -92,15 +91,14 @@ def get_portfolios(given_index, start_date, end_date, window_number):
     # Sharpe Ratio -> An optimal risky portfolio can be considered as one that has highest Sharpe ratio.
     # Finding the optimal portfolio with the given risk factor based on 20 year bonds interests offered
     if given_index == "DAX":
-        risk_factor = GERM_20y_bonds_avg_3_years[window_number]
+        risk_factor = GERM_20y_bonds_avg_2_years[window_number]
     else:
-        risk_factor = US_20y_bonds_avg_3_years[window_number]
+        risk_factor = US_20y_bonds_avg_2_years[window_number]
 
     optimal_risky_port = portfolios.iloc[((portfolios['Returns'] - risk_factor) / portfolios['Volatility']).idxmax()]
 
-    #print(optimal_risky_port)  # Sharpe optimal portfolio
-    #print(min_vol_port)  # Min volatility (Markowitz) portfolio
-    #print("aqui")
+    print(optimal_risky_port)  # Sharpe optimal portfolio
+    print(min_vol_port)  # Min volatility (Markowitz) portfolio
 
     plot_markowitz_and_sharpe_and_efficient_frontier(portfolios, optimal_risky_port, min_vol_port)
 
@@ -130,17 +128,17 @@ def plot_markowitz_and_sharpe_and_efficient_frontier(portfolios, optimal_risky_p
     plt.show()
 
 
-US_20y_bonds_avg_3_years = [0.0482, 0.0495, 0.0463, 0.0424, 0.0408, 0.0388, 0.0312, 0.0282, 0.0310, 0.0283, 0.0238, 0.0243, 0.0284, 0.0271, 0.0190]
-GERM_20y_bonds_avg_3_years = [0.0388, 0.0424, 0.0446, 0.0427, 0.0373, 0.0333, 0.0275, 0.0230, 0.0208, 0.0144, 0.0079, 0.0074, 0.0084, 0.0043, -0.0009]
-indexes = ["DAX", "S&P", "DJI"]
+US_20y_bonds_avg_2_years = [0.0482, 0.0495, 0.0463, 0.0424, 0.0408, 0.0388, 0.0312, 0.0282, 0.0310, 0.0283, 0.0238, 0.0243, 0.0284, 0.0271, 0.0190]
+GERM_20y_bonds_avg_2_years = [0.0388, 0.0424, 0.0446, 0.0427, 0.0373, 0.0333, 0.0275, 0.0230, 0.0208, 0.0144, 0.0079, 0.0074, 0.0084, 0.0043, -0.0009]
+indexes = ["DAX", "DJI", "S&P"]
 dates = ["2005-01-01", "2006-01-01", "2007-01-01", "2008-01-01", "2009-01-01", "2010-01-01", "2011-01-01",
          "2012-01-01", "2013-01-01", "2014-01-01", "2015-01-01", "2016-01-01", "2017-01-01", "2018-01-01",
          "2019-01-01", "2020-01-01", "2021-01-01"]
 
-years_window_size = 2
+years_window_size = 5
 for index in indexes:
     for i in range(years_window_size, len(dates)):
         start_d = dates[i - years_window_size]
         end_d = dates[i]
-        get_portfolios(index, start_d, end_d, i - years_window_size)
+        get_portfolios(index, "2007-01-01", "2009-01-01", i - years_window_size)
         raise ValueError("")
