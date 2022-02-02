@@ -11,11 +11,18 @@ Result format (2 rows for each window, Markowitz and Sharpe):
 
 import constants
 import calculations
+import pandas as pd
 
 
 for index in constants.indexes:
+    opt_ports = []
     for i in range(constants.years_window_size, len(constants.dates)):
         start_d = constants.dates[i - constants.years_window_size]
         end_d = constants.dates[i]
-        calculations.get_portfolios(index, False, start_d, end_d, i - constants.years_window_size)
-        raise ValueError("")
+        opt_port_with_returns_df = calculations.get_portfolios(index, False, start_d, end_d,
+                                                               i - constants.years_window_size)
+        opt_ports.append(opt_port_with_returns_df)
+
+    opt_ports_df = pd.concat(opt_ports).reset_index(drop=True)
+    print(opt_ports_df)
+    opt_ports_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/{index}_efficient_portfolios_and_returns.xlsx''')

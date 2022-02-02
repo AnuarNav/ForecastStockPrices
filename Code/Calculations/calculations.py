@@ -31,10 +31,10 @@ def get_prices(given_index, with_predicted, start_date, end_date):
     :param String end_date: Date in YYYY-MM-DD format
     :return: pandas dataframe including prices between start and end date for the stocks in specified index
     """
-    if given_index == "DAX":
+    if given_index == "DAX30":
         absolute_path = \
             "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DAX30/DAX30_cleaned_prices.xlsx"
-    elif given_index == "S&P":
+    elif given_index == "S&P500":
         absolute_path = \
             "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/S&P500/S&P500_cleaned_prices.xlsx"
     elif given_index == "DJI":
@@ -47,10 +47,10 @@ def get_prices(given_index, with_predicted, start_date, end_date):
     df = df.loc[start_date: end_date]
 
     if with_predicted:
-        if given_index == "DAX":
+        if given_index == "DAX30":
             absolute_path = \
                 "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DAX30/DAX30_prices_predicted.xlsx"
-        elif given_index == "S&P":
+        elif given_index == "S&P500":
             absolute_path = \
                 "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/S&P500/S&P500_prices_predicted" \
                 ".xlsx"
@@ -157,7 +157,7 @@ def get_portfolios(given_index, with_predicted, start_date, end_date, window_num
 
     # Sharpe Ratio -> An optimal risky portfolio can be considered as one that has highest Sharpe ratio.
     # Finding the optimal portfolio with the given risk factor based on 20 year bonds interests offered
-    if given_index == "DAX":
+    if given_index == "DAX30":
         risk_factor = constants.GERM_20y_bonds_avg_2_years[window_number]
     else:
         risk_factor = constants.US_20y_bonds_avg_2_years[window_number]
@@ -176,6 +176,8 @@ def get_portfolios(given_index, with_predicted, start_date, end_date, window_num
     print(opt_port_with_returns_df)
 
     # plot_markowitz_and_sharpe_and_efficient_frontier(portfolios, optimal_risky_port, min_vol_port)
+
+    return opt_port_with_returns_df
 
 
 def plot_markowitz_and_sharpe_and_efficient_frontier(portfolios, optimal_risky_port, min_vol_port):
@@ -208,8 +210,8 @@ def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, start_date,
     calculate_returns calculates the return of each portfolio in a df, using the formula:
     ROI = ∑( ((Pni - P(n-1)i) / P(n-1)) * Wi ) WHERE n = next year, n-1 = end_date, W = weight, P = closing price
 
-    :param DataFrame min_vol_and_sharpe_joint_port_df: Pandas dataframe in the form | Stock1 Weight | Stock2 Weight| ...
-     | start_date | end_date |
+    :param DataFrame min_vol_and_sharpe_joint_port_df: Pandas dataframe in the form | Strategy | start_date |
+    end_date | Stock1 Weight | Stock2 Weight| ... |
      :param String given_index: index name
     :param String start_date: Date in YYYY-MM-DD format
     :param String end_date: Date in YYYY-MM-DD format
@@ -233,4 +235,4 @@ def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, start_date,
 
     min_vol_and_sharpe_joint_port_df['Return'] = ports_returns
 
-    return min_vol_and_sharpe_joint_port_df
+    return min_vol_and_sharpe_joint_port_df.reset_index(drop=True)
