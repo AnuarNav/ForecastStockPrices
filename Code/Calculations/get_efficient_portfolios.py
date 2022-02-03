@@ -24,5 +24,5 @@ for index in constants.indexes:
         opt_ports.append(opt_port_with_returns_df)
 
     opt_ports_df = pd.concat(opt_ports).reset_index(drop=True)
-    print(opt_ports_df)
+
     opt_ports_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/{index}_efficient_portfolios_and_returns.xlsx''')

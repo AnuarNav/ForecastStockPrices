@@ -171,7 +171,7 @@ def get_portfolios(given_index, with_predicted, start_date, end_date, window_num
     min_vol_and_sharpe_joint_port_df = get_joint_ports_with_dates_and_strategy_df(optimal_risky_port_df,
                                                                                   min_vol_port_df, start_date, end_date)
 
-    opt_port_with_returns_df = calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, start_date, end_date)
+    opt_port_with_returns_df = calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date)
 
     print(opt_port_with_returns_df)
 
@@ -205,20 +205,23 @@ def plot_markowitz_and_sharpe_and_efficient_frontier(portfolios, optimal_risky_p
     plt.show()
 
 
-def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, start_date, end_date):
+def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date):
     """
     calculate_returns calculates the return of each portfolio in a df, using the formula:
-    ROI = ∑( ((Pni - P(n-1)i) / P(n-1)) * Wi ) WHERE n = next year, n-1 = end_date, W = weight, P = closing price
+    ROI = ∑( ((Pni - P(n-1)i) / P(n-1)) * Wi ) WHERE n = next year of end_date, n-1 = end_date, W = weight, P = closing
+    price
+    Next year price is the price at YYYY+1-12-31
+    Curr year price is the price at YYYY-1-1
 
     :param DataFrame min_vol_and_sharpe_joint_port_df: Pandas dataframe in the form | Strategy | start_date |
     end_date | Stock1 Weight | Stock2 Weight| ... |
      :param String given_index: index name
-    :param String start_date: Date in YYYY-MM-DD format
     :param String end_date: Date in YYYY-MM-DD format
     :return: df with a new column 'Return', representing the return from the specific portfolio compared to price in
     one year time
     """
 
+    start_date = end_date
     end_date = get_one_year_later(end_date)
     index_prices_df = get_prices(given_index, False, start_date, end_date)
     ports_returns = []
