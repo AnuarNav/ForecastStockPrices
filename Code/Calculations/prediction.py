@@ -4,7 +4,9 @@ DAX) and saves the predicted prices in 3 excels, one for each index, into
 /INDEX_NAME_predicted_prices.xlsx
 
 in the following format:
-| date | stock1 | stock2 | ... | """
+| date | stock1 | stock2 | ... |
+
+Predictions only done until year 2019 (included) as, even though 2020 data is available, """
 import inline as inline
 import matplotlib
 import pandas as pd
@@ -18,27 +20,44 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
-import tensorflow
 
+
+batch_size = 5
+epochs = 5
 
 for index in constants.indexes:
-    prices_predicted_dfs = []
+    # Get all prices from [2005-2020] (both included)
+    prices_df = calculations.get_prices(index, False, constants.dates[0], calculations.
+                                        get_one_year_later(constants.dates[len(constants.dates) - 1])).dropna()
+    # df where all stocks of an index will be stored
+    all_index_stock_prices_predicted_df = pd.DataFrame()
 
-    for i in range(constants.years_window_size, len(constants.dates)):
-        print(f'''### Predicting index {index}; Date {i - 1}/{len(constants.dates) - i} ###''')
-        start_d = constants.dates[i - constants.years_window_size]
-        end_d = calculations.get_one_year_later(constants.dates[i])
-        prices_df = calculations.get_prices(index, False, start_d, end_d)
-        assert not np.any(np.isnan(prices_df))
-        for (stockTicker, prices) in prices_df.iteritems():
-            prices = prices.values.reshape(-1, 1)  # List has to be 2d to be normalized
+    stock_index = 0
+    for (stockTicker, all_prices) in prices_df.iteritems():
+        stock_index += 1
+        list_single_stock_prices_predicted_dfs = []  # List that contains all prices_predicted_df's
+        prices_predicted_df = pd.DataFrame()  # Contains prices predicted between specific dates of a single stock
+        for i in range(constants.years_window_size, len(constants.dates)):
+            prices_predicted_df = pd.DataFrame()
+
+            print(f'''### Predicting index {index}; Stock {stockTicker} ({stock_index}/{len(prices_df.columns)}); 
+            Date {i - constants.years_window_size + 1}/{len(constants.dates) - constants.years_window_size} ###''')
+
+            # Get only prices between start and end dates into a dataframe
+            start_d = constants.dates[i - constants.years_window_size]
+            end_d = calculations.get_one_year_later(constants.dates[i])
+            stock_prices_bet_dates_df = prices_df.loc[start_d: end_d]
+
+            # Get specific stock column and convert it to 2D list, so it can be normalized
+            stock_prices_bet_dates = stock_prices_bet_dates_df[stockTicker].values.reshape(-1, 1)
+
             # Choosing between Standardization or normalization
             # sc = StandardScaler()
             sc = MinMaxScaler()
 
-            DataScaler = sc.fit(prices)
-            X = DataScaler.transform(prices)  # Normalize prices (values between 0-1 to save memory)
-            X = X.reshape(X.shape[0],)  # Reshape back to 1d list
+            DataScaler = sc.fit(stock_prices_bet_dates)
+            X = DataScaler.transform(stock_prices_bet_dates)  # Normalize prices (values between 0-1 to save memory)
+            X = X.reshape(X.shape[0], )  # Reshape back to 1d list
             print('### After Normalization ###')
             print(X[-10:])
 
@@ -130,7 +149,7 @@ for index in constants.indexes:
             StartTime = time.time()
 
             # Fitting the RNN to the Training set
-            regressor.fit(X_train, y_train, batch_size=5, epochs=5)
+            regressor.fit(X_train, y_train, batch_size=batch_size, epochs=epochs)
 
             EndTime = time.time()
             print("############### Total Time Taken: ", round((EndTime - StartTime) / 60), 'Minutes #############')
@@ -147,12 +166,28 @@ for index in constants.indexes:
             print('#### Predicted Prices ####')
             print(predicted_Price)
 
-            raise ValueError("")
+            orig_price_day_250 = orig[0][-1]
+            pred_price_day_250 = predicted_Price[0][-1]
+            print('Percentage error: ', (100 * (abs(orig_price_day_250 - pred_price_day_250) / orig_price_day_250)))
 
-        prices_predicted_df = 0
-        prices_predicted_dfs.append(prices_predicted_df)
+            # Crete df from dates and predicted prices
+            dates = stock_prices_bet_dates_df.index.values
+            prices_predicted_df = pd.DataFrame({stockTicker: predicted_Price[0], 'Date': dates[-len(
+                predicted_Price[0]):]})
+            prices_predicted_df.set_index('Date', inplace=True)
 
-    all_prices_predicted_df = pd.concat(prices_predicted_dfs).reset_index(drop=True)
+            list_single_stock_prices_predicted_dfs.append(prices_predicted_df)
 
-    all_prices_predicted_df.to_excel(
+        # Add all dates into a single df
+        single_stock_all_prices_predicted_df = pd.concat(list_single_stock_prices_predicted_dfs)
+        # Add all dates of a single stock into the index df which includes all
+        all_index_stock_prices_predicted_df = all_index_stock_prices_predicted_df.join(
+            single_stock_all_prices_predicted_df) if not all_index_stock_prices_predicted_df.empty else \
+            single_stock_all_prices_predicted_df
+
+    print(f'''Index {index} predictions df:''')
+    print(all_index_stock_prices_predicted_df)
+    # Save df which contains all predictions from [2007-2020] of all stocks in current index
+    all_index_stock_prices_predicted_df.to_excel(
         f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/{index}_predicted_prices.xlsx''')
+    raise ValueError("")

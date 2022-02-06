@@ -49,14 +49,14 @@ def get_prices(given_index, with_predicted, start_date, end_date):
     if with_predicted:
         if given_index == "DAX30":
             absolute_path = \
-                "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DAX30/DAX30_prices_predicted.xlsx"
+                "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DAX30/DAX30_predicted_prices.xlsx"
         elif given_index == "S&P500":
             absolute_path = \
-                "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/S&P500/S&P500_prices_predicted" \
+                "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/S&P500/S&P500_predicted_prices" \
                 ".xlsx"
         elif given_index == "DJI":
             absolute_path = \
-                "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DJI/DJI_prices_predicted.xlsx"
+                "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DJI/DJI_predicted_prices.xlsx"
         # Get prices predicted starting from end_date (until 1 year ahead) and concat the predicted prices
         start_date = end_date
         end_date = get_one_year_later(end_date)
@@ -96,7 +96,7 @@ def get_joint_ports_with_dates_and_strategy_df(optimal_risky_port_df, min_vol_po
 
 def get_portfolios(given_index, with_predicted, start_date, end_date, window_number):
     """
-    get_portfolios saves 2 portfolios for each window of 2 years:
+    get_portfolios returns 2 portfolios for each window of 2 years:
     1.Using the sharpe ratio and 2.Markowitz min volatility portfolio.
 
     :param String given_index: index name
