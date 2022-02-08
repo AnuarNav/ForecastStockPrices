@@ -84,4 +84,3 @@ for index in constants.indexes:
     returns_with_pct_change_df = get_pct_change_and_mean(returns_with_and_without_prediction_df)
 
     returns_with_pct_change_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/{index}_returns_compared.xlsx''')
-    raise ValueError("")
