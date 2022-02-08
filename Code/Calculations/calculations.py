@@ -171,7 +171,7 @@ def get_portfolios(given_index, with_predicted, start_date, end_date, window_num
     min_vol_and_sharpe_joint_port_df = get_joint_ports_with_dates_and_strategy_df(optimal_risky_port_df,
                                                                                   min_vol_port_df, start_date, end_date)
 
-    opt_port_with_returns_df = calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date)
+    opt_port_with_returns_df = calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date, with_predicted)
 
     print(opt_port_with_returns_df)
 
@@ -205,7 +205,7 @@ def plot_markowitz_and_sharpe_and_efficient_frontier(portfolios, optimal_risky_p
     plt.show()
 
 
-def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date):
+def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date, with_predicted):
     """
     calculate_returns calculates the return of each portfolio in a df, using the formula:
     ROI = ∑( ((Pni - P(n-1)i) / P(n-1)) * Wi ) WHERE n = next year of end_date, n-1 = end_date, W = weight, P = closing
@@ -217,6 +217,7 @@ def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date):
     end_date | Stock1 Weight | Stock2 Weight| ... |
      :param String given_index: index name
     :param String end_date: Date in YYYY-MM-DD format
+    :param Boolean with_predicted: True if the prices predicted should be used too
     :return: df with a new column 'Return', representing the return from the specific portfolio compared to price in
     one year time
     """
@@ -236,6 +237,7 @@ def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date):
 
         ports_returns.append(port_return)
 
-    min_vol_and_sharpe_joint_port_df['Return'] = ports_returns
+    returns_label = 'Return_with_prediction' if with_predicted else 'Return'
+    min_vol_and_sharpe_joint_port_df[returns_label] = ports_returns
 
     return min_vol_and_sharpe_joint_port_df.reset_index(drop=True)
