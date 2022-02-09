@@ -10,7 +10,8 @@ For each index it saves a new excel file into:
 /INDEX_NAME_returns_compared.xlsx
 
 Result format:
-| Strategy (Markowitz/Sharpe) | Start_date | end_date | return | return_with_prediction | pct_change"""
+| Strategy (Markowitz/Sharpe) | Start_date | end_date | return | return_with_prediction | pct_change |
+mean_pct_change|"""
 
 import constants
 import pandas as pd
@@ -51,8 +52,8 @@ def get_returns_and_with_predicted(index):
 
     # Drop all stock weight columns
     returns_w_and_wo_prediction_df.drop(returns_w_and_wo_prediction_df.columns.
-                                        difference(['Start Date', 'End Date', 'Return', 'Return_with_prediction']), 1,
-                                        inplace=True)
+                                        difference(['Strategy', 'Start Date', 'End Date', 'Return',
+                                                    'Return_with_prediction']), 1, inplace=True)
 
     return returns_w_and_wo_prediction_df
 
@@ -84,3 +85,4 @@ for index in constants.indexes:
     returns_with_pct_change_df = get_pct_change_and_mean(returns_with_and_without_prediction_df)
 
     returns_with_pct_change_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/{index}_returns_compared.xlsx''')
+    raise ValueError("")
