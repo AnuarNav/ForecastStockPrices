@@ -16,6 +16,8 @@ from Calculations import constants
 from Calculations import calculations
 import pandas as pd
 
+"""    - [ ] PONER LAS VARS Q CAMBIAN ARRIBA y SOLO CAMBIAR ESO EN CADA SCRIPT"""
+
 for recurrence in constants.recurrences:
     for input in constants.inputs:
         for index in constants.indexes:

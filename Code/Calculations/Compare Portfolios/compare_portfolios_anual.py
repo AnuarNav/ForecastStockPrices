@@ -16,6 +16,7 @@ mean_pct_change|"""
 from Calculations import constants
 import pandas as pd
 
+"""    - [ ] PONER LAS VARS Q CAMBIAN ARRIBA y SOLO CAMBIAR ESO EN CADA SCRIPT"""
 
 def get_returns_and_with_predicted(index_given):
     """

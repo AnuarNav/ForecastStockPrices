@@ -1,5 +1,5 @@
-"""Gets the efficient portfolios for each 2 year window from [2005...2020) using Markowitz and Sharpe ratio based on
-previous prices for all indexes (DJI, DAX, S&P) AND the return of each portfolio.
+"""Gets the efficient portfolios for each 2 year window from [2005...2020) PREVIOUS to the next {year} using
+Markowitz and Sharpe ratio based on previous prices for all indexes (DJI, DAX, S&P) AND the return of each portfolio.
 
 For each index it saves a new excel file into
 /Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/INDEX_NAME
@@ -13,6 +13,7 @@ from Calculations import constants
 from Calculations import calculations
 import pandas as pd
 
+"""    - [ ] PONER LAS VARS Q CAMBIAN ARRIBA y SOLO CAMBIAR ESO EN CADA SCRIPT"""
 
 for index in constants.indexes:
     opt_ports = []
