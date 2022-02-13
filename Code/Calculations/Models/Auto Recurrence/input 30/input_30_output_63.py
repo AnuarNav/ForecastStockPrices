@@ -48,8 +48,7 @@ for index in constants.indexes:
         for i in range(window_size, len(dates)):
             prices_predicted_df = pd.DataFrame()
 
-            print(f'''### Predicting index {index}; Stock {stockTicker} ({stock_index}/{len(prices_df.columns)}); 
-            Date {i - window_size + 1}/{len(dates) - window_size} ###''')
+            print(f'''### Predicting index {index}; Stock {stockTicker} ({stock_index}/{len(prices_df.columns)}); Date {i - window_size + 1}/{len(dates) - window_size} ###''')
 
             # Get only prices between start and end dates into a dataframe
             start_d = dates[i - window_size]
@@ -177,7 +176,7 @@ for index in constants.indexes:
             # Crete df from dates and predicted prices
             dates_predicted = stock_prices_bet_dates_df.index.values
             prices_predicted_df = pd.DataFrame({stockTicker: predicted_Price[0], 'Date': dates_predicted[-len(
-                predicted_Price[0]):], 'Percentage_Error': percentage_error})
+                predicted_Price[0]):]})
             prices_predicted_df.set_index('Date', inplace=True)
             print(prices_predicted_df)
             list_single_stock_prices_predicted_dfs.append(prices_predicted_df)

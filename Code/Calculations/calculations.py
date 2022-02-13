@@ -11,14 +11,14 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 
-def get_one_year_later(date):
+def get_one_year_later(date_given):
     """
         get_one_year_later returns the next year. Given YYYY-MM-DD, return YYYY+1-MM-DD
 
-        :param String date: Date in YYYY-MM-DD format
+        :param String date_given: Date in YYYY-MM-DD format
         :return: String in the format YYYY-MM-DD
         """
-    curr_end_year = date[:4]
+    curr_end_year = date_given[:4]
     return str(int(curr_end_year) + 1) + '-01-01'
 
 
