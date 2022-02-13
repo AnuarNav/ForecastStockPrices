@@ -6,38 +6,38 @@ Files Compared:
 'INDEX_efficient_portfolios_and_returns_with_prediction.xlsx’ and ‘INDEX_efficient_portfolios_and_returns.xlsx’
 
 For each index it saves a new excel file into:
-/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/INDEX_NAME
-/INDEX_NAME_returns_compared.xlsx
+/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/INDEX_NAME/Compared Returns/{RECURRENCE}/{INPUT}
+/INDEX_NAME_returns_compared_{TimeFrameWindow}.xlsx
 
 Result format:
 | Strategy (Markowitz/Sharpe) | Start_date | end_date | return | return_with_prediction | pct_change |
 mean_pct_change|"""
 
-import constants
+from Calculations import constants
 import pandas as pd
 
 
-def get_returns_and_with_predicted(index):
+def get_returns_and_with_predicted(index_given):
     """
     Given the index name, returns one dataframe built by joining returns with and without using predicted prices
 
-    :param String index: index name
+    :param String index_given: index name
     :return: Returns one dataframe built by joining returns with and without using predicted prices in the form:
     | start_date | end_date | Return | Return_with_prediction |
     """
-    if index == "DAX30":
+    if index_given == "DAX30":
         absolute_path = \
-            "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DAX30/DAX30_efficient_portfolios_and_returns.xlsx"
+            "/Data/DAX30/DAX30_efficient_portfolios_and_returns_anual.xlsx"
         absolute_path_with_prediction = \
-            "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DAX30/DAX30_efficient_portfolios_and_returns_with_prediction.xlsx"
-    elif index == "S&P500":
+            "/Data/DAX30/DAX30_efficient_portfolios_and_returns_with_prediction_anual_auto.xlsx"
+    elif index_given == "S&P500":
         absolute_path = \
-            "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/S&P500/S&P500_efficient_portfolios_and_returns.xlsx"
+            "/Data/S&P500/S&P500_efficient_portfolios_and_returns.xlsx"
         absolute_path_with_prediction = \
             "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/S&P500/S&P500_efficient_portfolios_and_returns_with_prediction.xlsx"
-    elif index == "DJI":
+    elif index_given == "DJI":
         absolute_path = \
-            "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DJI/DJI_efficient_portfolios_and_returns.xlsx"
+            "/Data/DJI/DJI_efficient_portfolios_and_returns.xlsx"
         absolute_path_with_prediction = \
             "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DJI/DJI_efficient_portfolios_and_returns_with_prediction.xlsx"
     else:
@@ -79,10 +79,11 @@ def get_pct_change_and_mean(returns_w_and_wo_prediction_df):
 
     return returns_w_and_wo_prediction_df
 
+for recurrence in constants.recurrences:
+    for input in constants.inputs:
+        for index in constants.indexes:
+            returns_with_and_without_prediction_df = get_returns_and_with_predicted(index)
+            returns_with_pct_change_df = get_pct_change_and_mean(returns_with_and_without_prediction_df)
 
-for index in constants.indexes:
-    returns_with_and_without_prediction_df = get_returns_and_with_predicted(index)
-    returns_with_pct_change_df = get_pct_change_and_mean(returns_with_and_without_prediction_df)
-
-    returns_with_pct_change_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/{index}_returns_compared.xlsx''')
-    raise ValueError("")
+            returns_with_pct_change_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/{index}_returns_compared.xlsx''')
+            raise ValueError("")

@@ -3,10 +3,12 @@ This module gathers all functions to calculate efficient portfolios using markow
 return of a portfolio comparing each component's closing price at end_date to closing price in one year time.
 """
 
-import constants
+from Calculations import constants
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 
 def get_one_year_later(date):
@@ -18,6 +20,19 @@ def get_one_year_later(date):
         """
     curr_end_year = date[:4]
     return str(int(curr_end_year) + 1) + '-01-01'
+
+
+def get_x_months_later_date(date_given, months):
+    """
+    Returns the date(date_given + months) in String format
+    :param date_given: Date in YYYY-MM-DD format
+    :param months: Number of months wanted added to given_date
+    :return:
+    """
+    year = date_given[:4]
+    month = date_given[5:7]
+    next_date = date(int(year), int(month), 1) + relativedelta(months=+months)
+    return str(next_date)
 
 
 def get_prices(given_index, with_predicted, start_date, end_date):

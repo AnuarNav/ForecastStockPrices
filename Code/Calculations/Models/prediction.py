@@ -6,13 +6,12 @@ DAX) and saves the predicted prices in 3 excels, one for each index, into
 in the following format:
 | date | stock1 | stock2 | ... |
 
-Predictions only done until year 2019 (included) as, even though 2020 data is available, """
-import inline as inline
-import matplotlib
+Predictions done until year 2020 (included)"""
+import os
+
 import pandas as pd
 import numpy as np
-from Calculations import constants
-import calculations
+from Calculations import constants, calculations
 import time
 # Feature Scaling for fast training of neural networks
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
@@ -22,13 +21,21 @@ from keras.layers import Dense
 from keras.layers import LSTM
 
 
-batch_size = 5
-epochs = 5
+TimeSteps = 30  # next few day's Price Prediction is based on last how many past day's prices - INPUT
+FutureTimeSteps = 250  # How many days in future you want to predict the prices (it will predict prices
+# of day 1, 2, 3, ..., 250. LSTM uses a sliding window starting from: day prediction 1, and,
+# with that prediction, then calculates prediction of day 2 (moves the startingIndex of the window by one
+# each time it does a prediction until it predicts 250). - OUTPUT
+
+
+TotalStartTime = time.time()
 
 for index in constants.indexes:
     # Get all prices from [2005-2020] (both included)
-    prices_df = calculations.get_prices(index, False, constants.dates[0], calculations.
-                                        get_one_year_later(constants.dates[len(constants.dates) - 1])).dropna()
+    prices_df = calculations.get_prices(index, False, constants.annual_dates[0], calculations.
+                                        get_x_months_later_date(constants.annual_dates[len(constants.annual_dates) -
+                                                                                       1],
+                                                                constants.annual_months)).dropna()
     # df where all stocks of an index will be stored
     all_index_stock_prices_predicted_df = pd.DataFrame()
 
@@ -37,15 +44,15 @@ for index in constants.indexes:
         stock_index += 1
         list_single_stock_prices_predicted_dfs = []  # List that contains all prices_predicted_df's
         prices_predicted_df = pd.DataFrame()  # Contains prices predicted between specific dates of a single stock
-        for i in range(constants.years_window_size, len(constants.dates)):
+        for i in range(constants.years_window_size, len(constants.annual_dates)):
             prices_predicted_df = pd.DataFrame()
 
             print(f'''### Predicting index {index}; Stock {stockTicker} ({stock_index}/{len(prices_df.columns)}); 
-            Date {i - constants.years_window_size + 1}/{len(constants.dates) - constants.years_window_size} ###''')
+            Date {i - constants.years_window_size + 1}/{len(constants.annual_dates) - constants.years_window_size} ###''')
 
             # Get only prices between start and end dates into a dataframe
-            start_d = constants.dates[i - constants.years_window_size]
-            end_d = calculations.get_one_year_later(constants.dates[i])
+            start_d = constants.annual_dates[i - constants.years_window_size]
+            end_d = calculations.get_x_months_later_date(constants.annual_dates[i], constants.annual_months)
             stock_prices_bet_dates_df = prices_df.loc[start_d: end_d]
 
             # Get specific stock column and convert it to 2D list, so it can be normalized
@@ -69,11 +76,6 @@ for index in constants.indexes:
             y_samples = list()
 
             NumberOfRows = len(X)
-            TimeSteps = 30  # next few day's Price Prediction is based on last how many past day's prices
-            FutureTimeSteps = 250  # How many days in future you want to predict the prices (it will predict prices
-            # of day 1, 2, 3, ..., 250. LSTM uses a sliding window starting from: day prediction 1, and,
-            # with that prediction, then calculates prediction of day 2 (moves the startingIndex of the window by one
-            # each time it does a prediction until it predicts 250).
 
             # Iterate through the values to create combinations
             for j in range(TimeSteps, NumberOfRows - FutureTimeSteps, 1):
@@ -149,7 +151,7 @@ for index in constants.indexes:
             StartTime = time.time()
 
             # Fitting the RNN to the Training set
-            regressor.fit(X_train, y_train, batch_size=batch_size, epochs=epochs)
+            regressor.fit(X_train, y_train, batch_size=constants.batch_size, epochs=constants.epochs)
 
             EndTime = time.time()
             print("############### Total Time Taken: ", round((EndTime - StartTime) / 60), 'Minutes #############')
@@ -160,22 +162,23 @@ for index in constants.indexes:
             print('\n#### Original Prices ####')
             print(orig)
 
-            # Making predictions on the 2 first year values (first 512 values from X)
+            # Making predictions
             predicted_Price = regressor.predict(X_test)
             predicted_Price = DataScaler.inverse_transform(predicted_Price)
             print('#### Predicted Prices ####')
             print(predicted_Price)
 
-            orig_price_day_250 = orig[0][-1]
-            pred_price_day_250 = predicted_Price[0][-1]
-            print('Percentage error: ', (100 * (abs(orig_price_day_250 - pred_price_day_250) / orig_price_day_250)))
+            orig_price_last_day = orig[0][-1]
+            pred_price_last_day = predicted_Price[0][-1]
+            percentage_error = (100 * (abs(orig_price_last_day - pred_price_last_day) / orig_price_last_day))
+            print('Percentage error: ', percentage_error)
 
             # Crete df from dates and predicted prices
             dates = stock_prices_bet_dates_df.index.values
             prices_predicted_df = pd.DataFrame({stockTicker: predicted_Price[0], 'Date': dates[-len(
-                predicted_Price[0]):]})
+                predicted_Price[0]):], 'Percentage_Error': percentage_error})
             prices_predicted_df.set_index('Date', inplace=True)
-
+            print(prices_predicted_df)
             list_single_stock_prices_predicted_dfs.append(prices_predicted_df)
 
         # Add all dates into a single df
@@ -190,4 +193,8 @@ for index in constants.indexes:
     # Save df which contains all predictions from [2007-2020] of all stocks in current index
     all_index_stock_prices_predicted_df.to_excel(
         f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/{index}_predicted_prices.xlsx''')
-    raise ValueError("")
+
+TotalEndTime = time.time()
+total_time_taken_df = pd.DataFrame({'TimeTaken in Minutes': round((TotalEndTime - TotalStartTime) / 60)})
+total_time_taken_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/
+TimeTaken/{os.path.basename(__file__)}_time.xlsx''')

@@ -9,16 +9,16 @@ Result format (2 rows for each window, Markowitz and Sharpe):
 | Strategy (Markowitz||Sharpe) | start_date | end_date | Stock1 weight | Stock2 weight | ...  | Return
 """
 
-import constants
-import calculations
+from Calculations import constants
+from Calculations import calculations
 import pandas as pd
 
 
 for index in constants.indexes:
     opt_ports = []
-    for i in range(constants.years_window_size, len(constants.dates)):
-        start_d = constants.dates[i - constants.years_window_size]
-        end_d = constants.dates[i]
+    for i in range(constants.years_window_size, len(constants.annual_dates)):
+        start_d = constants.annual_dates[i - constants.years_window_size]
+        end_d = constants.annual_dates[i]
         opt_port_with_returns_df = calculations.get_portfolios(index, False, start_d, end_d,
                                                                i - constants.years_window_size)
         opt_ports.append(opt_port_with_returns_df)
