@@ -65,8 +65,8 @@ for index in constants.indexes:
             DataScaler = sc.fit(stock_prices_bet_dates)
             X = DataScaler.transform(stock_prices_bet_dates)  # Normalize prices (values between 0-1 to save memory)
             X = X.reshape(X.shape[0], )  # Reshape back to 1d list
-            print('### After Normalization ###')
-            print(X[-10:])
+            # print('### After Normalization ###')
+            # print(X[-10:])
 
             # x_sample == input data AND y_sample == expected output data
             # Multi step data preparation
@@ -88,13 +88,13 @@ for index in constants.indexes:
             # Reshape the Input as a 3D (samples, Time Steps, Features)
             X_data = np.array(X_samples)
             X_data = X_data.reshape(X_data.shape[0], X_data.shape[1], 1)
-            print('### Input Data Shape ###')
-            print(X_data.shape)
+            # print('### Input Data Shape ###')
+            # print(X_data.shape)
 
             # We do not reshape y as a 3D data as it is supposed to be a single column only
             y_data = np.array(y_samples)
-            print('### Output Data Shape ###')
-            print(y_data.shape)
+            # print('### Output Data Shape ###')
+            # print(y_data.shape)
 
             #  Splitting the data into Training and Testing
             # Choosing the number of testing data records
@@ -108,20 +108,20 @@ for index in constants.indexes:
 
             #############################################
             # Printing the shape of training and testing
-            print('\n#### Training Data shape ####')
-            print(X_train.shape)
-            print(y_train.shape)
+            # print('\n#### Training Data shape ####')
+            # print(X_train.shape)
+            # print(y_train.shape)
 
-            print('\n#### Testing Data shape ####')
-            print(X_test.shape)
-            print(y_test.shape)
+            # print('\n#### Testing Data shape ####')
+            # print(X_test.shape)
+            # print(y_test.shape)
 
             # Creating the Deep Learning Multi-Step LSTM model
             # Defining Input shapes for LSTM
             TimeSteps = X_train.shape[1]
             TotalFeatures = X_train.shape[2]
-            print("Number of TimeSteps:", TimeSteps)
-            print("Number of Features:", TotalFeatures)
+            # print("Number of TimeSteps:", TimeSteps)
+            # print("Number of Features:", TotalFeatures)
 
             # Initialising the RNN
             regressor = Sequential()
@@ -154,31 +154,31 @@ for index in constants.indexes:
             regressor.fit(X_train, y_train, batch_size=constants.batch_size, epochs=constants.epochs)
 
             EndTime = time.time()
-            print("############### Total Time Taken: ", round((EndTime - StartTime) / 60), 'Minutes #############')
+            # print("############### Total Time Taken: ", round((EndTime - StartTime) / 60), 'Minutes #############')
 
             ###################
             # Getting the original price values for testing data
             orig = DataScaler.inverse_transform(y_test)
-            print('\n#### Original Prices ####')
-            print(orig)
+            # print('\n#### Original Prices ####')
+            # print(orig)
 
             # Making predictions
             predicted_Price = regressor.predict(X_test)
             predicted_Price = DataScaler.inverse_transform(predicted_Price)
-            print('#### Predicted Prices ####')
-            print(predicted_Price)
+            # print('#### Predicted Prices ####')
+            # print(predicted_Price)
 
             orig_price_last_day = orig[0][-1]
             pred_price_last_day = predicted_Price[0][-1]
             percentage_error = (100 * (abs(orig_price_last_day - pred_price_last_day) / orig_price_last_day))
-            print('Percentage error: ', percentage_error)
+            # print('Percentage error: ', percentage_error)
 
             # Crete df from dates and predicted prices
             dates_predicted = stock_prices_bet_dates_df.index.values
             prices_predicted_df = pd.DataFrame({stockTicker: predicted_Price[0], 'Date': dates_predicted[-len(
                 predicted_Price[0]):]})
             prices_predicted_df.set_index('Date', inplace=True)
-            print(prices_predicted_df)
+            # print(prices_predicted_df)  # HERE
             list_single_stock_prices_predicted_dfs.append(prices_predicted_df)
 
         # Add all dates into a single df
@@ -196,6 +196,6 @@ for index in constants.indexes:
         f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/PredictedPrices/{recurrence}/{input_}/{index}_predicted_prices.xlsx''')
 
 TotalEndTime = time.time()
-total_time_taken_df = pd.DataFrame({'TimeTaken in Minutes': round((TotalEndTime - TotalStartTime) / 60)})
+total_time_taken_df = pd.DataFrame({'TimeTaken in Minutes': round((TotalEndTime - TotalStartTime) / 60), 'TimeTaken in Hours': round((TotalEndTime - TotalStartTime) / 360)})
 total_time_taken_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/TimeTaken/{recurrence}/{input_}/{os.path.basename(__file__)}_time.xlsx''')
 
