@@ -24,10 +24,11 @@ def get_one_year_later(date_given):
 
 def get_x_months_later_date(date_given, months):
     """
-    Returns the date(date_given + months) in String format
+    Returns the date(date_given + months) in String format.
+
     :param date_given: Date in YYYY-MM-DD format
     :param months: Number of months wanted added to given_date
-    :return:
+    :return: date(date_given + months) in String format
     """
     year = date_given[:4]
     month = date_given[5:7]
@@ -78,7 +79,7 @@ def get_prices(given_index, with_predicted, start_date, end_date):
         df_predicted = pd.read_excel(absolute_path, index_col=0)
         df_predicted = df_predicted.loc[start_date: end_date]
         frames = [df, df_predicted]
-        df = pd.concat(frames)
+        df = pd.concat(frames).groupby(level=0).last()
 
     return df
 
@@ -255,4 +256,4 @@ def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date, w
     returns_label = 'Return_with_prediction' if with_predicted else 'Return'
     min_vol_and_sharpe_joint_port_df[returns_label] = ports_returns
 
-    return min_vol_and_sharpe_joint_port_df.reset_index(drop=True)
+    return min_vol_and_sharpe_joint_port_df.reset_index(drop=True).groupby(level=0).last()

@@ -44,14 +44,14 @@ for index in constants.indexes:
         stock_index += 1
         list_single_stock_prices_predicted_dfs = []  # List that contains all prices_predicted_df's
         prices_predicted_df = pd.DataFrame()  # Contains prices predicted between specific dates of a single stock
-        for i in range(constants.years_window_size, len(constants.annual_dates)):
+        for i in range(constants.annual_window_size, len(constants.annual_dates)):
             prices_predicted_df = pd.DataFrame()
 
             print(f'''### Predicting index {index}; Stock {stockTicker} ({stock_index}/{len(prices_df.columns)}); 
-            Date {i - constants.years_window_size + 1}/{len(constants.annual_dates) - constants.years_window_size} ###''')
+            Date {i - constants.annual_window_size + 1}/{len(constants.annual_dates) - constants.annual_window_size} ###''')
 
             # Get only prices between start and end dates into a dataframe
-            start_d = constants.annual_dates[i - constants.years_window_size]
+            start_d = constants.annual_dates[i - constants.annual_window_size]
             end_d = calculations.get_x_months_later_date(constants.annual_dates[i], constants.annual_months)
             stock_prices_bet_dates_df = prices_df.loc[start_d: end_d]
 

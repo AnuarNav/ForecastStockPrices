@@ -182,7 +182,8 @@ for index in constants.indexes:
             list_single_stock_prices_predicted_dfs.append(prices_predicted_df)
 
         # Add all dates into a single df
-        single_stock_all_prices_predicted_df = pd.concat(list_single_stock_prices_predicted_dfs)
+        single_stock_all_prices_predicted_df = pd.concat(list_single_stock_prices_predicted_dfs)\
+            .groupby(level=0).last()  # Drop duplicated indexes as last date of each interval overlap
         # Add all dates of a single stock into the index df which includes all
         all_index_stock_prices_predicted_df = all_index_stock_prices_predicted_df.join(
             single_stock_all_prices_predicted_df) if not all_index_stock_prices_predicted_df.empty else \
@@ -192,10 +193,10 @@ for index in constants.indexes:
     TotalStartTime = time.time()
     print(all_index_stock_prices_predicted_df)
     # Save df which contains all predictions from [2007-2020] of all stocks in current index
-    all_index_stock_prices_predicted_df.to_excel(
+    all_index_stock_prices_predicted_df.groupby(level=0).last().to_excel(
         f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/PredictedPrices/{recurrence}/{input_}/{index}_predicted_prices.xlsx''')
 
 TotalEndTime = time.time()
-total_time_taken_df = pd.DataFrame({'TimeTaken in Minutes': round((TotalEndTime - TotalStartTime) / 60), 'TimeTaken in Hours': round((TotalEndTime - TotalStartTime) / 360)})
+total_time_taken_df = pd.DataFrame({'TimeTaken in Minutes': round((TotalEndTime - TotalStartTime) / 60), 'TimeTaken in Hours': round((TotalEndTime - TotalStartTime) / 360)}, index=[0])
 total_time_taken_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/TimeTaken/{recurrence}/{input_}/{os.path.basename(__file__)}_time.xlsx''')
 

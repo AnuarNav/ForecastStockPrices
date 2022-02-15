@@ -16,11 +16,11 @@ import pandas as pd
 
 for index in constants.indexes:
     opt_ports = []
-    for i in range(constants.years_window_size, len(constants.annual_dates)):
-        start_d = constants.annual_dates[i - constants.years_window_size]
+    for i in range(constants.annual_window_size, len(constants.annual_dates)):
+        start_d = constants.annual_dates[i - constants.annual_window_size]
         end_d = constants.annual_dates[i]
         opt_port_with_returns_df = calculations.get_portfolios(index, False, start_d, end_d,
-                                                               i - constants.years_window_size)
+                                                               i - constants.annual_window_size)
         opt_ports.append(opt_port_with_returns_df)
 
     opt_ports_df = pd.concat(opt_ports).reset_index(drop=True)
