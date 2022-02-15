@@ -51,6 +51,6 @@ inputs = ['input 30', 'input 125', 'input 250']
 
 num_portfolios = 10000
 
-epochs = 1
+epochs = 5
 batch_size = 5
 manual_future_time_steps = 10
