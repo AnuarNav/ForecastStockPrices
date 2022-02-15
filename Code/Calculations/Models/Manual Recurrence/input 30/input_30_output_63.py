@@ -183,9 +183,9 @@ for index in constants.indexes:
         all_index_stock_prices_predicted_df = all_index_stock_prices_predicted_df.join(
             single_stock_all_prices_predicted_df) if not all_index_stock_prices_predicted_df.empty else \
             single_stock_all_prices_predicted_df
+        print(all_index_stock_prices_predicted_df)
 
     print(f'''Index {index} predictions df:''')
-    TotalStartTime = time.time()
     print(all_index_stock_prices_predicted_df)
     # Save df which contains all predictions from [2007-2020] of all stocks in current index
     all_index_stock_prices_predicted_df.groupby(level=0).last().to_excel(
