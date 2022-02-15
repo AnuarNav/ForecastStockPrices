@@ -170,7 +170,9 @@ for index in constants.indexes:
 
             # Crete df from dates and predicted prices
             dates_predicted = stock_prices_to_predict_df.index.values
-            prices_predicted = prices_predicted[:len(dates_predicted)]  # Get rid of over-predicted values
+            min_len = min(len(dates_predicted), len(prices_predicted))
+            prices_predicted = prices_predicted[:min_len]  # Get rid of over-predicted values
+            dates_predicted = dates_predicted[:min_len]
             prices_predicted_df = pd.DataFrame({stockTicker: prices_predicted, 'Date': dates_predicted})
             prices_predicted_df.set_index('Date', inplace=True)
             # print(prices_predicted_df)  # HERE
