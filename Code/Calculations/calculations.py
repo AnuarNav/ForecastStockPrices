@@ -2,6 +2,7 @@
 This module gathers all functions to calculate efficient portfolios using markowitz and Sharpe ratio, as well as the
 return of a portfolio comparing each component's closing price at end_date to closing price in one year time.
 """
+import math
 
 from Calculations import constants
 import numpy as np
@@ -9,17 +10,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import date
 from dateutil.relativedelta import relativedelta
-
-
-def get_one_year_later(date_given):
-    """
-        get_one_year_later returns the next year. Given YYYY-MM-DD, return YYYY+1-MM-DD
-
-        :param String date_given: Date in YYYY-MM-DD format
-        :return: String in the format YYYY-MM-DD
-        """
-    curr_end_year = date_given[:4]
-    return str(int(curr_end_year) + 1) + '-01-01'
 
 
 def get_x_months_later_date(date_given, months):
@@ -36,7 +26,7 @@ def get_x_months_later_date(date_given, months):
     return str(next_date)
 
 
-def get_prices(given_index, with_predicted, start_date, end_date):
+def get_prices(given_index, with_predicted, start_date, end_date, months_ahead):
     """
     get_prices returns pandas dataframe including prices between [start, end) dates for the stocks in specified
     index. If with_predicted is true, it will also concatenate the predicted prices for next year into the dataframe
@@ -45,6 +35,7 @@ def get_prices(given_index, with_predicted, start_date, end_date):
     :param Boolean with_predicted: True if the prices predicted should be used too
     :param String start_date: Date in YYYY-MM-DD format
     :param String end_date: Date in YYYY-MM-DD format
+    :param Int months_ahead: Number of months prediction ahead
     :return: pandas dataframe including prices between start and end date for the stocks in specified index
     """
     if given_index == "DAX30":
@@ -73,9 +64,9 @@ def get_prices(given_index, with_predicted, start_date, end_date):
         elif given_index == "DJI":
             absolute_path = \
                 "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DJI/DJI_predicted_prices.xlsx"
-        # Get prices predicted starting from end_date (until 1 year ahead) and concat the predicted prices
+        # Get prices predicted starting from end_date (until X months ahead) and concat the predicted prices
         start_date = end_date
-        end_date = get_one_year_later(end_date)
+        end_date = get_x_months_later_date(end_date, months_ahead)
         df_predicted = pd.read_excel(absolute_path, index_col=0)
         df_predicted = df_predicted.loc[start_date: end_date]
         frames = [df, df_predicted]
@@ -88,7 +79,7 @@ def get_transposed_df(port_series):
     # Series to df + get rid of index
     port_df = pd.DataFrame(port_series).reset_index(level=0)
 
-    port_df = port_df.T.iloc[:, 2:]  # Transpose df and delete Return & Volatility columns
+    port_df = port_df.T.iloc[:, 1:]  # Transpose df and delete Return column
 
     # Set column names to stock names (which curr are the first row)
     port_df = port_df.rename(columns=port_df.iloc[0]).iloc[1:, :]
@@ -96,21 +87,24 @@ def get_transposed_df(port_series):
     return port_df
 
 
-def get_joint_ports_with_dates_and_strategy_df(optimal_risky_port_df, min_vol_port_df, start_date, end_date):
+def get_joint_ports_with_dates_and_strategy_df(optimal_risky_port_df, min_vol_port_df, end_date, months_ahead):
     frames = [min_vol_port_df, optimal_risky_port_df]
     joint_port_df = pd.concat(frames)
 
     # Add Strategy Column (first Markowitz, then Sharpe)
     strategies = ['Min volatility (Markowitz)', 'Sharpe Ratio']
     joint_port_df.insert(0, 'Strategy', strategies, True)
-    # Add date columns and corresponding value
-    joint_port_df.insert(0, 'End Date', end_date, True)
-    joint_port_df.insert(0, 'Start Date', start_date, True)
+    # Add date columns and corresponding value (start and end are the dates of the 2 year window used to create
+    # portfolio so, add X months to end_date and use orig end_date as start_date
+    start_d = end_date
+    end_date_portfolio = get_x_months_later_date(end_date, months_ahead)
+    joint_port_df.insert(0, 'End Date', end_date_portfolio, True)
+    joint_port_df.insert(0, 'Start Date', start_d, True)
 
     return joint_port_df
 
 
-def get_portfolios(given_index, with_predicted, start_date, end_date, window_number):
+def get_portfolios(given_index, with_predicted, start_date, end_date, interval_2_year_index, months_ahead):
     """
     get_portfolios returns 2 portfolios for each window of 2 years:
     1.Using the sharpe ratio and 2.Markowitz min volatility portfolio.
@@ -119,12 +113,13 @@ def get_portfolios(given_index, with_predicted, start_date, end_date, window_num
     :param Boolean with_predicted: True if the prices predicted should be used too
     :param String start_date: Date in YYYY-MM-DD format
     :param String end_date: Date in YYYY-MM-DD format
-    :param Integer window_number: Starting from zero, the current window number (0 means 2005-2007, 1 means 2006-2007,..
+    :param Integer interval_2_year_index: Starting from zero, the current window number (0 means 2005-2007, 1 means 2006-2007,..
+    :param Int months_ahead: Number of months prediction ahead
     :return: df in the form | Strategy (Markowitz||Sharpe) | start_date | end_date | Stock1 weight | Stock2 weight |
-    ...  | Return | -------- (2 rows for each window, Markowitz and Sharpe)
+    ... | Volatility | Return | -------- (2 rows for each window, Markowitz and Sharpe)
     """
 
-    index_prices_df = get_prices(given_index, with_predicted, start_date, end_date)
+    index_prices_df = get_prices(given_index, with_predicted, start_date, end_date, months_ahead)
 
     # Calculate Covariance Matrix
     cov_matrix = index_prices_df.pct_change().apply(lambda x: np.log(1 + x)).cov()
@@ -174,9 +169,10 @@ def get_portfolios(given_index, with_predicted, start_date, end_date, window_num
     # Sharpe Ratio -> An optimal risky portfolio can be considered as one that has highest Sharpe ratio.
     # Finding the optimal portfolio with the given risk factor based on 20 year bonds interests offered
     if given_index == "DAX30":
-        risk_factor = constants.GERM_20y_bonds_avg_2_years[window_number]
+        # Apply mod to adapt to trimester/quarter/semester
+        risk_factor = constants.GERM_20y_bonds_avg_2_years[interval_2_year_index]
     else:
-        risk_factor = constants.US_20y_bonds_avg_2_years[window_number]
+        risk_factor = constants.US_20y_bonds_avg_2_years[interval_2_year_index]
 
     # Sharpe optimal portfolio
     optimal_risky_port = portfolios.iloc[((portfolios['Returns'] - risk_factor) / portfolios['Volatility']).idxmax()]
@@ -184,15 +180,16 @@ def get_portfolios(given_index, with_predicted, start_date, end_date, window_num
     optimal_risky_port_df = get_transposed_df(optimal_risky_port)
     min_vol_port_df = get_transposed_df(min_vol_port)
 
-    min_vol_and_sharpe_joint_port_df = get_joint_ports_with_dates_and_strategy_df(optimal_risky_port_df,
-                                                                                  min_vol_port_df, start_date, end_date)
+    min_vol_and_sharpe_joint_port_df = get_joint_ports_with_dates_and_strategy_df(
+        optimal_risky_port_df, min_vol_port_df, end_date, months_ahead)
 
-    opt_port_with_returns_df = calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date, with_predicted)
+    opt_port_with_returns_df = calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date,
+                                                 with_predicted, months_ahead)
 
     print(opt_port_with_returns_df)
 
-    # plot_markowitz_and_sharpe_and_efficient_frontier(portfolios, optimal_risky_port, min_vol_port)
-
+    plot_markowitz_and_sharpe_and_efficient_frontier(portfolios, optimal_risky_port, min_vol_port)
+    raise ValueError("")
     return opt_port_with_returns_df
 
 
@@ -221,13 +218,10 @@ def plot_markowitz_and_sharpe_and_efficient_frontier(portfolios, optimal_risky_p
     plt.show()
 
 
-def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date, with_predicted):
+def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date, with_predicted, months_ahead):
     """
     calculate_returns calculates the return of each portfolio in a df, using the formula:
-    ROI = ∑( ((Pni - P(n-1)i) / P(n-1)) * Wi ) WHERE n = next year of end_date, n-1 = end_date, W = weight, P = closing
-    price
-    Next year price is the price at YYYY+1-12-31
-    Curr year price is the price at YYYY-1-1
+    ROI = ∑(Wi * ln(Pfinal/Pinicial)) WHERE W = weight, Pfinal = closing price and Pinicial = starting price
 
     :param DataFrame min_vol_and_sharpe_joint_port_df: Pandas dataframe in the form | Strategy | start_date |
     end_date | Stock1 Weight | Stock2 Weight| ... |
@@ -235,21 +229,21 @@ def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date, w
     :param String end_date: Date in YYYY-MM-DD format
     :param Boolean with_predicted: True if the prices predicted should be used too
     :return: df with a new column 'Return', representing the return from the specific portfolio compared to price in
-    one year time
+    a trimester/quarter/semester/year tiem
     """
 
     start_date = end_date
-    end_date = get_one_year_later(end_date)
-    index_prices_df = get_prices(given_index, False, start_date, end_date)
+    end_date = get_x_months_later_date(end_date, months_ahead)
+    index_prices_df = get_prices(given_index, False, start_date, end_date, 0)
     ports_returns = []
     for index, row in min_vol_and_sharpe_joint_port_df.iterrows():
         port_return = 0
-        row = row[3:]  # Get rid of Dates & Strategy
+        row = row[4:]  # Get rid of Dates & Strategy & Volatility
         for i in range(0, len(row)):
             stock_weight = row[i]
             start_price = index_prices_df.iloc[:, i].iloc[0]  # Select value in col i and first row
             end_price = index_prices_df.iloc[:, i].iloc[-1]  # Select value in col i and last row
-            port_return += stock_weight * ((end_price - start_price) / start_price)
+            port_return += stock_weight * (math.log(end_price / start_price))
 
         ports_returns.append(port_return)
 

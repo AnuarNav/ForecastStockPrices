@@ -1,6 +1,6 @@
 """This module compares the returns of each portfolio with it's time equivalent predicted portfolio, generating a new
-file which contains the pct_change for each row, calculated by:
-pct_change = ((Return_with_prediction - Return) / Return) * 100
+file which contains the return_pct_change for each row, calculated by:
+return_pct_change = ((Return_with_prediction - Return) / Return) * 100
 
 Files Compared:
 'INDEX_efficient_portfolios_and_returns_with_prediction.xlsx’ and ‘INDEX_efficient_portfolios_and_returns.xlsx’
@@ -10,8 +10,8 @@ For each index it saves a new excel file into:
 /INDEX_NAME_returns_compared_{TimeFrameWindow}.xlsx
 
 Result format:
-| Strategy (Markowitz/Sharpe) | Start_date | end_date | return | return_with_prediction | pct_change |
-mean_pct_change|"""
+| Strategy (Markowitz/Sharpe) | Start_date | end_date | return | return_with_prediction | return_pct_change |
+mean_return_pct_change|"""
 
 from Calculations import constants
 import pandas as pd
@@ -59,24 +59,24 @@ def get_returns_and_with_predicted(index_given):
     return returns_w_and_wo_prediction_df
 
 
-def get_pct_change_and_mean(returns_w_and_wo_prediction_df):
+def get_return_pct_change_and_mean(returns_w_and_wo_prediction_df):
     """
 
     :param returns_w_and_wo_prediction_df: df in the form | start_date | end_date | Return | Return_with_prediction |
-    :return: Same df as given BUT adding two new columns: pct_change, calculated with the formula:
-    pct_change = ((Return_with_prediction - Return) / Return) * 100
-    and mean_pct_change, being the mean of all pct_change values
+    :return: Same df as given BUT adding two new columns: return_pct_change, calculated with the formula:
+    return_pct_change = ((Return_with_prediction - Return) / Return) * 100
+    and mean_return_pct_change, being the mean of all return_pct_change values
     Result in format:
-    | start_date | end_date | Return | Return_with_prediction | pct_change | mean_pct_change
+    | start_date | end_date | Return | Return_with_prediction | return_pct_change | mean_return_pct_change
     """
 
-    returns_w_and_wo_prediction_df['pct_change'] = returns_w_and_wo_prediction_df.apply(
+    returns_w_and_wo_prediction_df['return_pct_change'] = returns_w_and_wo_prediction_df.apply(
         lambda row: ((row.Return_with_prediction - row.Return) / row.Return) * 100, axis=1
     )
 
-    # Set mean in first row in new column 'mean_pct_change'
-    returns_w_and_wo_prediction_df.loc[returns_w_and_wo_prediction_df.index[0], 'mean_pct_change'] = \
-        returns_w_and_wo_prediction_df['pct_change'].mean().item()
+    # Set mean in first row in new column 'mean_return_pct_change'
+    returns_w_and_wo_prediction_df.loc[returns_w_and_wo_prediction_df.index[0], 'mean_return_pct_change'] = \
+        returns_w_and_wo_prediction_df['return_pct_change'].mean().item()
 
     return returns_w_and_wo_prediction_df
 
@@ -84,7 +84,7 @@ for recurrence in constants.recurrences:
     for input in constants.inputs:
         for index in constants.indexes:
             returns_with_and_without_prediction_df = get_returns_and_with_predicted(index)
-            returns_with_pct_change_df = get_pct_change_and_mean(returns_with_and_without_prediction_df)
+            returns_with_return_pct_change_df = get_return_pct_change_and_mean(returns_with_and_without_prediction_df)
 
-            returns_with_pct_change_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/{index}_returns_compared.xlsx''')
+            returns_with_return_pct_change_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/{index}_returns_compared.xlsx''')
             raise ValueError("")
