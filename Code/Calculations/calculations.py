@@ -108,7 +108,7 @@ def get_portfolios(given_index, with_predicted, start_date, end_date, interval_2
     ... | Volatility | Return | -------- (2 rows for each window, Markowitz and Sharpe)
     """
 
-    index_prices_df = get_prices(given_index, with_predicted, start_date, end_date, months_ahead)
+    index_prices_df = get_prices(given_index, with_predicted, start_date, end_date, months_ahead=months_ahead)
 
     # Calculate Covariance Matrix
     cov_matrix = index_prices_df.pct_change().apply(lambda x: np.log(1 + x)).cov()
@@ -223,7 +223,7 @@ def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date, w
 
     start_date = end_date
     end_date = get_x_months_later_date(end_date, months_ahead)
-    index_prices_df = get_prices(given_index, False, start_date, end_date, 0)
+    index_prices_df = get_prices(given_index, False, start_date, end_date)
     ports_returns = []
     for index, row in min_vol_and_sharpe_joint_port_df.iterrows():
         port_return = 0
