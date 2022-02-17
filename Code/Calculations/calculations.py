@@ -26,7 +26,7 @@ def get_x_months_later_date(date_given, months):
     return str(next_date)
 
 
-def get_prices(given_index, with_predicted, start_date, end_date, months_ahead, input_='', recurrence='',
+def get_prices(given_index, with_predicted, start_date, end_date, months_ahead=0, input_='', recurrence='',
                timeframe_name=''):
     """
     get_prices returns pandas dataframe including prices between [start, end) dates for the stocks in specified
