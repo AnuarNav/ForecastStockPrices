@@ -16,22 +16,28 @@ from Calculations import constants
 from Calculations import calculations
 import pandas as pd
 
+for recurrence in constants.recurrences:
+    for input_ in constants.inputs:
+        for timeframe in constants.timeframes_dict.keys():
+            months = constants.timeframes_dict[timeframe]['months']
+            dates = constants.timeframes_dict[timeframe]['dates']
+            window_size = constants.timeframes_dict[timeframe]['window_size']
+            for index in constants.indexes:
+                opt_ports = []
+                for i in range(window_size, len(dates)):
+                    start_d = dates[i - window_size]
+                    end_d = dates[i]
+                    opt_port_with_returns_df = calculations.get_portfolios(index, True, start_d, end_d,
+                                                                           int((i - window_size) / window_size), months,
+                                                                           timeframe_name=constants.timeframes_dict[
+                                                                               timeframe]['time_size_name'],
+                                                                           input_=input_, recurrence=recurrence)
+                    opt_ports.append(opt_port_with_returns_df)
 
-for timeframe in constants.timeframes_dict.keys():
-    months = constants.timeframes_dict[timeframe]['months']
-    dates = constants.timeframes_dict[timeframe]['dates']
-    window_size = constants.timeframes_dict[timeframe]['window_size']
-    for index in constants.indexes:
-        opt_ports = []
-        for i in range(window_size, max_date_index):
-            start_d = dates[i - window_size]
-            end_d = dates[i]
-            opt_port_with_returns_df = calculations.get_portfolios(index, True, start_d, end_d,
-                                                                   int((i - window_size) / window_size), months)
-            opt_ports.append(opt_port_with_returns_df)
+                opt_ports_df = pd.concat(opt_ports).reset_index(drop=True)
 
-        opt_ports_df = pd.concat(opt_ports).reset_index(drop=True)
-
-        opt_ports_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/Efficient Portfolios/{index}_efficient_portfolios_and_returns_{timeframe}.xlsx''')
-        print(f'''################## Index {index} DONE ##################\n\n''')
-    print(f'''################## Timeframe {timeframe} FINISHED ##################\n\n\n\n''')
+                opt_ports_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/Efficient Portfolios with Prediction/{recurrence}/{input_}/{index}_efficient_portfolios_and_returns_with_prediction_{timeframe}.xlsx''')
+                print(f'''################## Index {index} DONE ##################\n\n''')
+            print(f'''################## Timeframe {timeframe} FINISHED ##################\n\n\n\n''')
+        print(f'''################## Input {input_} COMPLETED ##################\n\n\n\n''')
+    print(f'''################## Recurrence {recurrence} ENDED ##################\n\n\n\n''')
