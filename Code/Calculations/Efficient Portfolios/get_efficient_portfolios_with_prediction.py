@@ -27,11 +27,10 @@ for recurrence in constants.recurrences:
                 for i in range(window_size, len(dates)):
                     start_d = dates[i - window_size]
                     end_d = dates[i]
-                    opt_port_with_returns_df = calculations.get_portfolios(index, True, start_d, end_d,
-                                                                           int((i - window_size) / window_size), months,
-                                                                           timeframe_name=constants.timeframes_dict[
-                                                                               timeframe]['time_size_name'],
-                                                                           input_=input_, recurrence=recurrence)
+                    opt_port_with_returns_df = calculations.get_portfolios(
+                        index, True, start_d, end_d, int((i - window_size) / window_size), months,
+                        timeframe_name=constants.timeframes_dict[timeframe]['time_size_name'], input_=input_,
+                        recurrence=recurrence)
                     opt_ports.append(opt_port_with_returns_df)
 
                 opt_ports_df = pd.concat(opt_ports).reset_index(drop=True)
