@@ -26,11 +26,13 @@ def get_x_months_later_date(date_given, months):
     return str(next_date)
 
 
-def get_prices(given_index, with_predicted, start_date, end_date, months_ahead):
+def get_prices(given_index, with_predicted, start_date, end_date, months_ahead, input_='', recurrence=''):
     """
     get_prices returns pandas dataframe including prices between [start, end) dates for the stocks in specified
     index. If with_predicted is true, it will also concatenate the predicted prices for next year into the dataframe
 
+    :param recurrence: Recurrence of prediction prices wanted
+    :param input_: Input of prediction prices wanted
     :param String given_index: index name
     :param Boolean with_predicted: True if the prices predicted should be used too
     :param String start_date: Date in YYYY-MM-DD format
@@ -38,22 +40,13 @@ def get_prices(given_index, with_predicted, start_date, end_date, months_ahead):
     :param Int months_ahead: Number of months prediction ahead
     :return: pandas dataframe including prices between start and end date for the stocks in specified index
     """
-    if given_index == "DAX30":
-        absolute_path = \
-            "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DAX30/DAX30_cleaned_prices.xlsx"
-    elif given_index == "S&P500":
-        absolute_path = \
-            "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/S&P500/S&P500_cleaned_prices.xlsx"
-    elif given_index == "DJI":
-        absolute_path = \
-            "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DJI/DJI_cleaned_prices.xlsx"
-    else:
-        raise ValueError("Index name is not valid")
-
+    absolute_path = f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{given_index}/{given_index}_cleaned_prices.xlsx'''
     df = pd.read_excel(absolute_path, index_col=0)
     df = df.loc[start_date: end_date]
 
     if with_predicted:
+        absolute_path = f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{given_index}
+        /PredictedPrices/{recurrence}/{input_}/{given_index}_predicted_prices.xlsx"""
         if given_index == "DAX30":
             absolute_path = \
                 "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DAX30/DAX30_predicted_prices.xlsx"
@@ -188,8 +181,8 @@ def get_portfolios(given_index, with_predicted, start_date, end_date, interval_2
 
     print(opt_port_with_returns_df)
 
-    plot_markowitz_and_sharpe_and_efficient_frontier(portfolios, optimal_risky_port, min_vol_port)
-    raise ValueError("")
+    # plot_markowitz_and_sharpe_and_efficient_frontier(portfolios, optimal_risky_port, min_vol_port)
+
     return opt_port_with_returns_df
 
 

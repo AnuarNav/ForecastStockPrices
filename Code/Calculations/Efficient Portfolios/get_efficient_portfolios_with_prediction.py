@@ -16,19 +16,22 @@ from Calculations import constants
 from Calculations import calculations
 import pandas as pd
 
-"""    - [ ] PONER LAS VARS Q CAMBIAN ARRIBA y SOLO CAMBIAR ESO EN CADA SCRIPT"""
 
-for recurrence in constants.recurrences:
-    for input in constants.inputs:
-        for index in constants.indexes:
-            opt_ports = []
-            for i in range(constants.annual_window_size, len(constants.annual_dates)):
-                start_d = constants.annual_dates[i - constants.annual_window_size]
-                end_d = constants.annual_dates[i]
-                opt_port_with_returns_df = calculations.get_portfolios(index, True, start_d, end_d,
-                                                                       i - constants.annual_window_size)
-                opt_ports.append(opt_port_with_returns_df)
+for timeframe in constants.timeframes_dict.keys():
+    months = constants.timeframes_dict[timeframe]['months']
+    dates = constants.timeframes_dict[timeframe]['dates']
+    window_size = constants.timeframes_dict[timeframe]['window_size']
+    for index in constants.indexes:
+        opt_ports = []
+        for i in range(window_size, max_date_index):
+            start_d = dates[i - window_size]
+            end_d = dates[i]
+            opt_port_with_returns_df = calculations.get_portfolios(index, True, start_d, end_d,
+                                                                   int((i - window_size) / window_size), months)
+            opt_ports.append(opt_port_with_returns_df)
 
-            opt_ports_df = pd.concat(opt_ports).reset_index(drop=True)
+        opt_ports_df = pd.concat(opt_ports).reset_index(drop=True)
 
-            opt_ports_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/{index}_efficient_portfolios_and_returns_with_prediction.xlsx''')
+        opt_ports_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/Efficient Portfolios/{index}_efficient_portfolios_and_returns_{timeframe}.xlsx''')
+        print(f'''################## Index {index} DONE ##################\n\n''')
+    print(f'''################## Timeframe {timeframe} FINISHED ##################\n\n\n\n''')

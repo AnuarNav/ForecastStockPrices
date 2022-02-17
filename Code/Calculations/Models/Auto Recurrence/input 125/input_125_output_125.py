@@ -21,6 +21,7 @@ from keras.layers import LSTM
 
 input_ = 'input 125'
 months = constants.semester_months
+timeframe_name = constants.semester
 dates = constants.semester_dates
 window_size = constants.semester_window_size
 recurrence = 'Auto Recurrence'
@@ -193,9 +194,9 @@ for index in constants.indexes:
     print(all_index_stock_prices_predicted_df)
     # Save df which contains all predictions from [2007-2020] of all stocks in current index
     all_index_stock_prices_predicted_df.groupby(level=0).last().to_excel(
-        f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/PredictedPrices/{recurrence}/{input_}/{index}_predicted_prices.xlsx''')
+        f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/PredictedPrices/{recurrence}/{input_}/{index}_predicted_prices_{timeframe_name}.xlsx''')
 
 TotalEndTime = time.time()
 total_time_taken_df = pd.DataFrame({'TimeTaken in Minutes': round((TotalEndTime - TotalStartTime) / 60), 'TimeTaken in Hours': round((TotalEndTime - TotalStartTime) / 360)}, index=[0])
-total_time_taken_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/TimeTaken&Errors/{recurrence}/{input_}/{os.path.basename(__file__)}_time.xlsx''')
+total_time_taken_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/ModelsMetaResults/Time/{recurrence}/{input_}/{os.path.basename(__file__)}_time.xlsx''')
 

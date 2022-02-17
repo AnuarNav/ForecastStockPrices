@@ -45,36 +45,33 @@ semester_months = 6
 quarter_months = 4
 trimester_months = 3
 
-annual_max_date_index = 15
-semester_max_date_index = 31
-quarter_max_date_index = 46
-trimester_max_date_index = 61
+annual = 'annual'
+semester = 'semester'
+quarter = 'quarter'
+trimester = 'trimester'
+
 
 timeframes_dict = {
     'annual': {
-        'time_size_name': 'annual',
-        'max_date_index': annual_max_date_index,
+        'time_size_name': annual,
         'months': annual_months,
         'dates': annual_dates,
         'window_size': annual_window_size
     },
     'semester': {
-        'time_size_name': 'semester',
-        'max_date_index': semester_max_date_index,
+        'time_size_name': semester,
         'months': semester_months,
         'dates': semester_dates,
         'window_size': semester_window_size
     },
     'quarter': {
-        'time_size_name': 'quarter',
-        'max_date_index': quarter_max_date_index,
+        'time_size_name': quarter,
         'months': quarter_months,
         'dates': quarter_dates,
         'window_size': quarter_window_size
     },
     'trimester': {
-        'time_size_name': 'trimester',
-        'max_date_index': trimester_max_date_index,
+        'time_size_name': trimester,
         'months': trimester_months,
         'dates': trimester_dates,
         'window_size': trimester_window_size

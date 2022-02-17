@@ -2,12 +2,12 @@
 quarter, semester or annual} using Markowitz and Sharpe ratio based on previous prices for all indexes (DJI, DAX,
 S&P) AND the return of each portfolio.
 
-For each index it saves a new excel file into
+For each index and timeframe it saves a new excel file into
 /Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/INDEX_NAME/Efficient Portfolios/
-/INDEX_NAME_efficient_portfolios_and_returns.xlsx
+/INDEX_NAME_efficient_portfolios_and_returns_{timeframe}.xlsx
 
 Result format (2 rows for each window, Markowitz and Sharpe):
-| Strategy (Markowitz||Sharpe) | start_date | end_date | Stock1 weight | Stock2 weight | ...  | Return
+| Strategy (Markowitz||Sharpe) | start_date | end_date | Volatility | Stock1 weight | Stock2 weight | ...  | Return
 """
 
 from Calculations import constants
@@ -16,13 +16,12 @@ import pandas as pd
 
 
 for timeframe in constants.timeframes_dict.keys():
-    max_date_index = constants.timeframes_dict[timeframe]['max_date_index']  # max it has to build portfolios until end_d = 2020-01-01
     months = constants.timeframes_dict[timeframe]['months']
     dates = constants.timeframes_dict[timeframe]['dates']
     window_size = constants.timeframes_dict[timeframe]['window_size']
     for index in constants.indexes:
         opt_ports = []
-        for i in range(window_size, max_date_index):
+        for i in range(window_size, len(dates)):
             start_d = dates[i - window_size]
             end_d = dates[i]
             opt_port_with_returns_df = calculations.get_portfolios(index, False, start_d, end_d,
