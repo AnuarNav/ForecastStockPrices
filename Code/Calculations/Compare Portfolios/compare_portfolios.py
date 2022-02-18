@@ -73,9 +73,6 @@ def get_return_pct_change_and_mean(returns_w_and_wo_prediction_df):
 for recurrence in constants.recurrences:
     for input_ in constants.inputs:
         for timeframe in constants.timeframes_dict.keys():
-            months = constants.timeframes_dict[timeframe]['months']
-            dates = constants.timeframes_dict[timeframe]['dates']
-            window_size = constants.timeframes_dict[timeframe]['window_size']
             for index in constants.indexes:
                 returns_with_and_without_prediction_df = get_returns_and_with_predicted(index_given=index,
                                                                                         timeframe_=timeframe,

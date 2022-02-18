@@ -60,6 +60,28 @@ def get_prices(given_index, with_predicted, start_date, end_date, months_ahead=0
     return df
 
 
+def get_only_predicted_prices(given_index, start_date, end_date, input_, recurrence, timeframe_name):
+    """
+    get_only_predicted_prices returns pandas dataframe including PREDICTED prices between [start, end) dates for the
+    stocks in specified index, predcited by the specific recurrence+input+timeframe model.
+
+    :param timeframe_name: trimester/quarter/semester/annual
+    :param recurrence: Recurrence of prediction prices wanted
+    :param input_: Input of prediction prices wanted
+    :param String given_index: index name
+    :param String start_date: Date in YYYY-MM-DD format
+    :param String end_date: Date in YYYY-MM-DD format
+    :return: pandas dataframe including prices between start and end date for the stocks in specified index
+    """
+    absolute_path = f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{given_index}/PredictedPrices/{recurrence}/{input_}/{given_index}_predicted_prices_{timeframe_name}.xlsx"""
+
+    # Get prices predicted from [start_date, end_date)
+    df_predicted = pd.read_excel(absolute_path, index_col=0)
+    df_predicted = df_predicted.loc[start_date: end_date]
+
+    return df_predicted
+
+
 def get_transposed_df(port_series):
     # Series to df + get rid of index
     port_df = pd.DataFrame(port_series).reset_index(level=0)

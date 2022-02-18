@@ -54,24 +54,28 @@ trimester = 'trimester'
 timeframes_dict = {
     'annual': {
         'time_size_name': annual,
+        'timeframe_number': 250,
         'months': annual_months,
         'dates': annual_dates,
         'window_size': annual_window_size
     },
     'semester': {
         'time_size_name': semester,
+        'timeframe_number': 125,
         'months': semester_months,
         'dates': semester_dates,
         'window_size': semester_window_size
     },
     'quarter': {
         'time_size_name': quarter,
+        'timeframe_number': 84,
         'months': quarter_months,
         'dates': quarter_dates,
         'window_size': quarter_window_size
     },
     'trimester': {
         'time_size_name': trimester,
+        'timeframe_number': 63,
         'months': trimester_months,
         'dates': trimester_dates,
         'window_size': trimester_window_size
@@ -81,6 +85,12 @@ timeframes_dict = {
 recurrences = ['Auto Recurrence', 'Manual Recurrence']
 
 inputs = ['input 30', 'input 125', 'input 250']
+
+inputs_with_underscore = {
+    'input 30': 'input_30',
+    'input 125': 'input 125',
+    'input 250': 'input 250'
+}
 
 num_portfolios = 10000
 
