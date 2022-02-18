@@ -236,7 +236,11 @@ def calculate_returns(min_vol_and_sharpe_joint_port_df, given_index, end_date, w
 
         ports_returns.append(port_return)
 
-    returns_label = 'Return_with_prediction' if with_predicted else 'Return'
+    returns_label = 'Return'
+    if with_predicted:
+        returns_label = 'Return_with_prediction'
+        min_vol_and_sharpe_joint_port_df.rename(columns={'Volatility': 'Volatility_with_prediction'})
+
     min_vol_and_sharpe_joint_port_df[returns_label] = ports_returns
 
     return min_vol_and_sharpe_joint_port_df.reset_index(drop=True).groupby(level=0).last()

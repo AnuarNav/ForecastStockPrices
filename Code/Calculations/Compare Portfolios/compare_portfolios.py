@@ -5,7 +5,7 @@ return_pct_change = ((Return_with_prediction - Return) / Return) * 100
 Files Compared:
 'INDEX_efficient_portfolios_and_returns_with_prediction.xlsx’ and ‘INDEX_efficient_portfolios_and_returns.xlsx’
 
-For each index it saves a new excel file into:
+For each index, input, timeframe and recurrence it saves a new excel file into:
 /Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/INDEX_NAME/Compared Returns/{RECURRENCE}/{INPUT}
 /INDEX_NAME_returns_compared_{TimeFrameWindow}.xlsx
 
@@ -16,33 +16,20 @@ mean_return_pct_change|"""
 from Calculations import constants
 import pandas as pd
 
-"""    - [ ] PONER LAS VARS Q CAMBIAN ARRIBA y SOLO CAMBIAR ESO EN CADA SCRIPT"""
 
-def get_returns_and_with_predicted(index_given):
+def get_returns_and_with_predicted(index_given, timeframe_, input_given, recurrence_):
     """
     Given the index name, returns one dataframe built by joining returns with and without using predicted prices
 
+    :param timeframe_: trimester/quarter/semester/annual
+    :param recurrence_: Recurrence of prediction prices wanted
+    :param input_: Input of prediction prices wanted
     :param String index_given: index name
     :return: Returns one dataframe built by joining returns with and without using predicted prices in the form:
     | start_date | end_date | Return | Return_with_prediction |
     """
-    if index_given == "DAX30":
-        absolute_path = \
-            "/Data/DAX30/DAX30_efficient_portfolios_and_returns_anual.xlsx"
-        absolute_path_with_prediction = \
-            "/Data/DAX30/DAX30_efficient_portfolios_and_returns_with_prediction_anual_auto.xlsx"
-    elif index_given == "S&P500":
-        absolute_path = \
-            "/Data/S&P500/S&P500_efficient_portfolios_and_returns.xlsx"
-        absolute_path_with_prediction = \
-            "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/S&P500/S&P500_efficient_portfolios_and_returns_with_prediction.xlsx"
-    elif index_given == "DJI":
-        absolute_path = \
-            "/Data/DJI/DJI_efficient_portfolios_and_returns.xlsx"
-        absolute_path_with_prediction = \
-            "/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/DJI/DJI_efficient_portfolios_and_returns_with_prediction.xlsx"
-    else:
-        raise ValueError("Index name is not valid")
+    absolute_path = f'''//Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index_given}/Efficient Portfolios/{index_given}_efficient_portfolios_and_returns_with_prediction_{timeframe_}.xlsx'''
+    absolute_path_with_prediction = f'''//Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index_given}/Efficient Portfolios with Prediction/{recurrence_}/{input_given}/{index_given}_efficient_portfolios_and_returns_with_prediction_{timeframe_}.xlsx'''
 
     returns_df = pd.read_excel(absolute_path, index_col=0)
     returns_with_prediction_df = pd.read_excel(absolute_path_with_prediction, index_col=0)
@@ -54,7 +41,8 @@ def get_returns_and_with_predicted(index_given):
     # Drop all stock weight columns
     returns_w_and_wo_prediction_df.drop(returns_w_and_wo_prediction_df.columns.
                                         difference(['Strategy', 'Start Date', 'End Date', 'Return',
-                                                    'Return_with_prediction']), 1, inplace=True)
+                                                    'Return_with_prediction', 'Volatility',
+                                                    'Volatility_with_prediction']), 1, inplace=True)
 
     return returns_w_and_wo_prediction_df
 
@@ -67,7 +55,8 @@ def get_return_pct_change_and_mean(returns_w_and_wo_prediction_df):
     return_pct_change = ((Return_with_prediction - Return) / Return) * 100
     and mean_return_pct_change, being the mean of all return_pct_change values
     Result in format:
-    | start_date | end_date | Return | Return_with_prediction | return_pct_change | mean_return_pct_change
+    | start_date | end_date | Volatility | Volatility_with_prediction | Return | Return_with_prediction |
+    return_pct_change | mean_return_pct_change |
     """
 
     returns_w_and_wo_prediction_df['return_pct_change'] = returns_w_and_wo_prediction_df.apply(
@@ -80,11 +69,19 @@ def get_return_pct_change_and_mean(returns_w_and_wo_prediction_df):
 
     return returns_w_and_wo_prediction_df
 
-for recurrence in constants.recurrences:
-    for input in constants.inputs:
-        for index in constants.indexes:
-            returns_with_and_without_prediction_df = get_returns_and_with_predicted(index)
-            returns_with_return_pct_change_df = get_return_pct_change_and_mean(returns_with_and_without_prediction_df)
 
-            returns_with_return_pct_change_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/{index}_returns_compared.xlsx''')
-            raise ValueError("")
+for recurrence in constants.recurrences:
+    for input_ in constants.inputs:
+        for timeframe in constants.timeframes_dict.keys():
+            months = constants.timeframes_dict[timeframe]['months']
+            dates = constants.timeframes_dict[timeframe]['dates']
+            window_size = constants.timeframes_dict[timeframe]['window_size']
+            for index in constants.indexes:
+                returns_with_and_without_prediction_df = get_returns_and_with_predicted(index_given=index,
+                                                                                        timeframe_=timeframe,
+                                                                                        input_given=input_,
+                                                                                        recurrence_=recurrence)
+                returns_with_return_pct_change_df = get_return_pct_change_and_mean(returns_with_and_without_prediction_df)
+
+                returns_with_return_pct_change_df.to_excel(
+                    f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/Compared Returns/{recurrence}/{input_}//{index}_returns_compared_{timeframe}.xlsx''')
