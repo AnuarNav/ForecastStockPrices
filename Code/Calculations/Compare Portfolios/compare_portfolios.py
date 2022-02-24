@@ -81,4 +81,4 @@ for recurrence in constants.recurrences:
                 returns_with_return_pct_change_df = get_return_pct_change_and_mean(returns_with_and_without_prediction_df)
 
                 returns_with_return_pct_change_df.to_excel(
-                    f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/Compared Returns/{recurrence}/{input_}//{index}_returns_compared_{timeframe}.xlsx''')
+                    f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/Compared Returns/{recurrence}/{input_}/{index}_returns_compared_{timeframe}.xlsx''')

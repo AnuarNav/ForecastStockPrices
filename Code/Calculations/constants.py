@@ -57,30 +57,38 @@ timeframes_dict = {
         'timeframe_number': 250,
         'months': annual_months,
         'dates': annual_dates,
-        'window_size': annual_window_size
+        'window_size': annual_window_size,
+        'periods': 14
     },
     'semester': {
         'time_size_name': semester,
         'timeframe_number': 125,
         'months': semester_months,
         'dates': semester_dates,
-        'window_size': semester_window_size
+        'window_size': semester_window_size,
+        'periods': 28
     },
     'quarter': {
         'time_size_name': quarter,
         'timeframe_number': 84,
         'months': quarter_months,
         'dates': quarter_dates,
-        'window_size': quarter_window_size
+        'window_size': quarter_window_size,
+        'periods': 42
     },
     'trimester': {
         'time_size_name': trimester,
         'timeframe_number': 63,
         'months': trimester_months,
         'dates': trimester_dates,
-        'window_size': trimester_window_size
+        'window_size': trimester_window_size,
+        'periods': 56
     }
 }
+
+transaction_fee = 0.0005
+annual_maintenance_cost = 91
+creation_cost = 161
 
 recurrences = ['Auto Recurrence', 'Manual Recurrence']
 
