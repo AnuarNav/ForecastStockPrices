@@ -12,7 +12,6 @@ Guardar df en excel en el path: /Data/{index}/Compared Returns/grouped_compared_
 """
 
 from Calculations import constants
-from Calculations import calculations
 import pandas as pd
 
 all_compared_returns_dfs_list = []

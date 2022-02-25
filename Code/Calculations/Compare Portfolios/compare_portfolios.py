@@ -28,8 +28,8 @@ def get_returns_and_with_predicted(index_given, timeframe_, input_given, recurre
     :return: Returns one dataframe built by joining returns with and without using predicted prices in the form:
     | start_date | end_date | Return | Return_with_prediction |
     """
-    absolute_path = f'''//Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index_given}/Efficient Portfolios/{index_given}_efficient_portfolios_and_returns_with_prediction_{timeframe_}.xlsx'''
-    absolute_path_with_prediction = f'''//Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index_given}/Efficient Portfolios with Prediction/{recurrence_}/{input_given}/{index_given}_efficient_portfolios_and_returns_with_prediction_{timeframe_}.xlsx'''
+    absolute_path = f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index_given}/Efficient Portfolios/{index_given}_efficient_portfolios_and_returns_with_prediction_{timeframe_}.xlsx'''
+    absolute_path_with_prediction = f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index_given}/Efficient Portfolios with Prediction/{recurrence_}/{input_given}/{index_given}_efficient_portfolios_and_returns_with_prediction_{timeframe_}.xlsx'''
 
     returns_df = pd.read_excel(absolute_path, index_col=0)
     returns_with_prediction_df = pd.read_excel(absolute_path_with_prediction, index_col=0)

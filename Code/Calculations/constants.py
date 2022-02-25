@@ -89,6 +89,7 @@ timeframes_dict = {
 transaction_fee = 0.0005
 annual_maintenance_cost = 91
 creation_cost = 161
+initial_investment = 100000
 
 recurrences = ['Auto Recurrence', 'Manual Recurrence']
 
