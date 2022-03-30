@@ -130,7 +130,8 @@ def get_portfolios(given_index, with_predicted, start_date, end_date, interval_2
     ... | Volatility | Return | -------- (2 rows for each window, Markowitz and Sharpe)
     """
 
-    index_prices_df = get_prices(given_index, with_predicted, start_date, end_date, months_ahead=months_ahead)
+    index_prices_df = get_prices(given_index, with_predicted, start_date, end_date, months_ahead=months_ahead,
+                                 timeframe_name=timeframe_name, input_=input_, recurrence=recurrence)
 
     # Calculate Covariance Matrix
     cov_matrix = index_prices_df.pct_change().apply(lambda x: np.log(1 + x)).cov()
