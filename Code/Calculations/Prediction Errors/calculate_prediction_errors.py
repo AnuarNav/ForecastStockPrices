@@ -16,7 +16,7 @@ import sklearn.metrics as sk
 def get_model_time_taken_df(recurrence_, input_given, timeframe_name):
     input_with_underscore = constants.inputs_with_underscore[input_given]
     timeframe_number = constants.timeframes_dict[timeframe_name]['timeframe_number']
-    time_absolute_path = f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/ModelsMetaResults/Time/{recurrence_}/{input_given}/{input_with_underscore}_output_{timeframe_number}_time.xlsx"""
+    time_absolute_path = f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/ModelsMetaResults/Time/{recurrence_}/{input_given}/{input_with_underscore}_output_{timeframe_number}.py_time.xlsx"""
     time_df = pd.read_excel(time_absolute_path, index_col=0)
 
     return time_df
@@ -36,16 +36,19 @@ def get_orig_and_predicted_values(start_date, end_date, input__, recurrence_, ti
         predicted_prices_dfs_list.append(predicted_prices_df)
 
     # Concat all 3 indexes orig/predictions into a single df
-    all_orig_prices_df = pd.concat(orig_prices_dfs_list, axis=1).dropna()
-    all_predicted_prices_df = pd.concat(predicted_prices_dfs_list, axis=1).dropna()
+    all_orig_prices_df = pd.concat(orig_prices_dfs_list, axis=1)
+    all_predicted_prices_df = pd.concat(predicted_prices_dfs_list, axis=1)
 
     orig_stacked_columns_df = all_orig_prices_df.stack().reset_index()
     predicted_columns_df = all_predicted_prices_df.stack().reset_index()
+    print(predicted_columns_df)
 
     merged_df = pd.merge(orig_stacked_columns_df, predicted_columns_df, on=['Date', 'level_1']).dropna()
 
     original_price_values = merged_df['0_x']
     predicted_price_values = merged_df['0_y']
+    if len(original_price_values) != len(predicted_price_values):
+        raise ValueError("Lists differ in length")
 
     return original_price_values, predicted_price_values
 

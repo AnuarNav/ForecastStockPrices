@@ -47,7 +47,7 @@ def get_prices(given_index, with_predicted, start_date, end_date, months_ahead=0
     df = df.loc[start_date: end_date]
 
     if with_predicted:
-        absolute_path = f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{given_index}/PredictedPrices/{recurrence}/{input_}/{given_index}_predicted_prices_{timeframe_name}.xlsx"""
+        absolute_path = f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{given_index}/PredictedPricesCleaned/{recurrence}/{input_}/{given_index}_predicted_prices_cleaned_{timeframe_name}.xlsx"""
 
         # Get prices predicted starting from end_date (until X months ahead) and concat the predicted prices
         start_date = end_date
@@ -73,7 +73,7 @@ def get_only_predicted_prices(given_index, start_date, end_date, input_, recurre
     :param String end_date: Date in YYYY-MM-DD format
     :return: pandas dataframe including prices between start and end date for the stocks in specified index
     """
-    absolute_path = f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{given_index}/PredictedPrices/{recurrence}/{input_}/{given_index}_predicted_prices_{timeframe_name}.xlsx"""
+    absolute_path = f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{given_index}/PredictedPricesCleaned/{recurrence}/{input_}/{given_index}_predicted_prices_cleaned_{timeframe_name}.xlsx"""
 
     # Get prices predicted from [start_date, end_date)
     df_predicted = pd.read_excel(absolute_path, index_col=0)

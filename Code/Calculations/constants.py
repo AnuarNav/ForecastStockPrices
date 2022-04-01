@@ -97,8 +97,8 @@ inputs = ['input 30', 'input 125', 'input 250']
 
 inputs_with_underscore = {
     'input 30': 'input_30',
-    'input 125': 'input 125',
-    'input 250': 'input 250'
+    'input 125': 'input_125',
+    'input 250': 'input_250'
 }
 
 num_portfolios = 10000
