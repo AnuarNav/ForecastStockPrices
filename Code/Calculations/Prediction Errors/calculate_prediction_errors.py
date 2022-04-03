@@ -44,7 +44,8 @@ def get_orig_and_predicted_values(start_date, end_date, input__, recurrence_, ti
     print(predicted_columns_df)
 
     merged_df = pd.merge(orig_stacked_columns_df, predicted_columns_df, on=['Date', 'level_1']).dropna()
-
+    merged_df['0'] = merged_df['0'].round(decimals=3)
+    
     original_price_values = merged_df['0_x']
     predicted_price_values = merged_df['0_y']
     if len(original_price_values) != len(predicted_price_values):

@@ -60,7 +60,7 @@ def get_return_pct_change_and_mean(returns_w_and_wo_prediction_df):
     """
 
     returns_w_and_wo_prediction_df['return_pct_change'] = returns_w_and_wo_prediction_df.apply(
-        lambda row: ((row.Return_with_prediction - row.Return) / row.Return) * 100, axis=1
+        lambda row: (float(row.Return_with_prediction - row.Return) / abs(row.Return)) * 100, axis=1
     )
 
     # Set mean in first row in new column 'mean_return_pct_change'
