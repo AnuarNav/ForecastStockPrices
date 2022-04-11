@@ -36,7 +36,7 @@ for index in constants.indexes:
         port_return_mean = returns_df['Return'].mean()
         returns_df = pd.DataFrame({'Index': index, 'with_prediction': False, 'Recurrence': '',
                                    'Input': '', 'Timeframe': timeframe,
-                                   'return': port_return_mean},
+                                   'Return': port_return_mean},
                                   index=[0])
         all_returns_dfs_list.append(returns_df)
 

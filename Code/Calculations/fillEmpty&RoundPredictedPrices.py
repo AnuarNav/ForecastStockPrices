@@ -26,6 +26,11 @@ for recurrence in constants.recurrences:
 
                 df_predicted = df_predicted.fillna(df)  # Fill NaN values in predicted prices with original prices
 
+                for col in df_predicted:
+                    indexes = df_predicted[(df_predicted[col] > 2000) | (df_predicted[col] < 0)].index.tolist()
+                    for i in indexes:
+                        df_predicted.loc[i, col] = df.loc[i, col]
+
                 df_predicted.to_excel(
                     f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/PredictedPricesCleaned/{recurrence}/{input_}/{index}_predicted_prices_cleaned_{timeframe}.xlsx''')
 

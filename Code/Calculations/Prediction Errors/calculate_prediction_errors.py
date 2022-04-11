@@ -41,11 +41,15 @@ def get_orig_and_predicted_values(start_date, end_date, input__, recurrence_, ti
 
     orig_stacked_columns_df = all_orig_prices_df.stack().reset_index()
     predicted_columns_df = all_predicted_prices_df.stack().reset_index()
-    print(predicted_columns_df)
 
     merged_df = pd.merge(orig_stacked_columns_df, predicted_columns_df, on=['Date', 'level_1']).dropna()
-    merged_df['0'] = merged_df['0'].round(decimals=3)
-    
+    merged_df['0_x'] = merged_df['0_x'].round(decimals=3)
+    merged_df['0_y'] = merged_df['0_y'].round(decimals=3)
+
+    # Get rid of predicted prices that are too high or negative
+    # merged_df = merged_df[merged_df['0_y'] < 10000]
+    # merged_df = merged_df[merged_df['0_y'] > 0]
+
     original_price_values = merged_df['0_x']
     predicted_price_values = merged_df['0_y']
     if len(original_price_values) != len(predicted_price_values):
@@ -72,3 +76,7 @@ for recurrence in constants.recurrences:
             time_taken_df['RSME'] = rsme
 
             time_taken_df.to_excel(f'''/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/ModelsMetaResults/Time&Errors/{recurrence}/{input_}/time_and_errors_{timeframe}.xlsx''')
+
+        print(f"""############## Input {input_} of {recurrence} done ##############""")
+    print(f"""############## {recurrence} done ##############""")
+

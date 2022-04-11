@@ -27,4 +27,4 @@ for recurrence in constants.recurrences:
             all_time_and_errors_dfs_list.append(time_and_errors_df)
 
 all_time_and_errors_df = pd.concat(all_time_and_errors_dfs_list)
-all_time_and_errors_df.to_excel(f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/ModelsMetaResults/grouped_meta_results.xlsx""")
+all_time_and_errors_df.to_excel(f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/grouped_meta_results.xlsx""")

@@ -21,11 +21,11 @@ for index in constants.indexes:
             for timeframe in constants.timeframes_dict.keys():
                 path = f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/Compared Returns/{recurrence}/{input_}/{index}_returns_compared_{timeframe}.xlsx"""
                 compared_returns_df = pd.read_excel(path, index_col=0)
-                mean_pct_change = compared_returns_df['mean_pct_change'].iloc[0]
+                mean_pct_change = compared_returns_df['mean_return_pct_change'].iloc[0]
                 compared_returns_df = pd.DataFrame({'Index': index, 'Recurrence': recurrence, 'Input': input_,
                                                     'Timeframe': timeframe, 'mean_return_pct_change': mean_pct_change},
                                                    index=[0])
                 all_compared_returns_dfs_list.append(compared_returns_df)
 
     all_compared_returns_df = pd.concat(all_compared_returns_dfs_list)
-    all_compared_returns_df.to_excel(f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/{index}/Compared Returns/grouped_compared_returns.xlsx""")
+all_compared_returns_df.to_excel(f"""/Users/anuarnavarro/Desktop/TFG/GitHub/ForecastStockPrices/Code/Data/grouped_compared_returns.xlsx""")
